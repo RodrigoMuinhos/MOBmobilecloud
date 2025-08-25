@@ -1,0 +1,2046 @@
+[
+  {
+    "numero": 36,
+    "hora": "22:17:18",
+    "cliente": {
+      "nome": "Ana Carolina Rolim",
+      "whatsapp": "(85) 99920-2009",
+      "endereco": "Rua das carnaubeiras, 350 cs 07",
+      "cpf": "070.496.323-09",
+      "cep": "60743780",
+      "nascimento": "2000-06-16",
+      "email": "",
+      "bairro": "Passaré",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 3,
+        "precoUnitario": 9.9,
+        "subtotal": 29.7
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090124286",
+        "nome": "1005RL",
+        "marca": "VXCRAFT",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 9.78,
+        "subtotal": 48.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090124286",
+        "nome": "1005RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090195951",
+        "nome": "1009RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 4,
+        "precoUnitario": 9.9,
+        "subtotal": 39.6
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086638445",
+        "nome": "1214RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 3,
+        "precoUnitario": 11.9,
+        "subtotal": 35.7
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086838550",
+        "nome": "1015MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 4,
+        "precoUnitario": 11.9,
+        "subtotal": 47.6
+      }
+    ],
+    "data": "2025-06-01T21:00:00.000Z",
+    "subtotal": 211.4,
+    "desconto": 21.14,
+    "frete": 0,
+    "total": 190.26,
+    "forma_pagamento": "Cartão de Crédito",
+    "destino_desconto": "AP",
+    "pago": true
+  },
+  {
+    "numero": 37,
+    "hora": "22:18:55",
+    "cliente": {
+      "nome": "Antonio Bruno Fermon Magalhães",
+      "whatsapp": "(85) 98183-8264",
+      "endereco": "Rua Tiburcio Cavalcante, 1952",
+      "cpf": "625.349.633-68",
+      "cep": "60125-100",
+      "nascimento": "1985-05-02",
+      "email": "",
+      "bairro": "Meireles",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086337820",
+        "nome": "1209RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090243878",
+        "nome": "1209RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      }
+    ],
+    "data": "2025-06-25T18:14:00.000Z",
+    "subtotal": 65.8,
+    "desconto": 0,
+    "frete": 0,
+    "total": 65.8,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 38,
+    "hora": "22:20:38",
+    "cliente": {
+      "nome": "Artur Graziani",
+      "whatsapp": "(11) 99168-9975",
+      "endereco": "Av abolicao, 2950, meireles",
+      "cpf": "443.898.548-01",
+      "cep": "60165080",
+      "nascimento": "1994-05-06",
+      "email": "",
+      "bairro": "Meireles",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086325924",
+        "nome": "1207RL",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086377396",
+        "nome": "1214RL",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087121831",
+        "nome": "1217MGR",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087064223",
+        "nome": "1209MGR",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      }
+    ],
+    "data": "2025-06-27T16:55:00.000Z",
+    "subtotal": 1100,
+    "desconto": 110,
+    "frete": 0,
+    "total": 990,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "AG",
+    "pago": true
+  },
+  {
+    "numero": 40,
+    "hora": "22:22:18",
+    "cliente": {
+      "nome": "Paulo di valio",
+      "whatsapp": "12996383780",
+      "endereco": "",
+      "cpf": "334.041.268-58",
+      "cep": "",
+      "nascimento": "1982-09-12",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RS-NEW-1747086618973",
+        "nome": "1209RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087085840",
+        "nome": "1209M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-24T01:41:00.000Z",
+    "subtotal": 23.8,
+    "desconto": 0,
+    "frete": 0,
+    "total": 23.8,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 41,
+    "hora": "22:23:18",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-MGR-NEW-1747086883062",
+        "nome": "1019MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "VXCRAFT-RLF-NEW-1747090376735",
+        "nome": "0603RLF",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      }
+    ],
+    "data": "2025-06-05T20:36:00.000Z",
+    "subtotal": 21.8,
+    "desconto": 2.18,
+    "frete": 0,
+    "total": 19.62,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 42,
+    "hora": "22:23:52",
+    "cliente": {
+      "nome": "Paulo di valio",
+      "whatsapp": "12996383780",
+      "endereco": "",
+      "cpf": "334.041.268-58",
+      "cep": "",
+      "nascimento": "1982-09-12",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1750894249026",
+        "nome": "1209M2",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      }
+    ],
+    "data": "2025-06-24T23:30:00.000Z",
+    "subtotal": 9.9,
+    "desconto": 0.9900000000000001,
+    "frete": 0,
+    "total": 8.91,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 43,
+    "hora": "22:25:02",
+    "cliente": {
+      "nome": "Paulo di valio",
+      "whatsapp": "12996383780",
+      "endereco": "",
+      "cpf": "334.041.268-58",
+      "cep": "",
+      "nascimento": "1982-09-12",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SKINK-RS-NEW-1750815613148",
+        "nome": "1014RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087085840",
+        "nome": "1209M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-21T14:34:00.000Z",
+    "subtotal": 23.8,
+    "desconto": 2.3800000000000003,
+    "frete": 0,
+    "total": 21.42,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 44,
+    "hora": "22:25:35",
+    "cliente": {
+      "nome": "Paulo di valio",
+      "whatsapp": "12996383780",
+      "endereco": "",
+      "cpf": "334.041.268-58",
+      "cep": "",
+      "nascimento": "1982-09-12",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-MGR-NEW-1747087085840",
+        "nome": "1209M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-22T23:47:00.000Z",
+    "subtotal": 11.9,
+    "desconto": 1.1900000000000002,
+    "frete": 0,
+    "total": 10.71,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 45,
+    "hora": "22:26:07",
+    "cliente": {
+      "nome": "Paulo di valio",
+      "whatsapp": "12996383780",
+      "endereco": "",
+      "cpf": "334.041.268-58",
+      "cep": "",
+      "nascimento": "1982-09-12",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-MGR-NEW-1747087085840",
+        "nome": "1209M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086815438",
+        "nome": "1015M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-25T18:06:00.000Z",
+    "subtotal": 23.8,
+    "desconto": 2.3800000000000003,
+    "frete": 0,
+    "total": 21.42,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 46,
+    "hora": "22:27:05",
+    "cliente": {
+      "nome": "Lucas Araujo Bezerra",
+      "whatsapp": "(85) 98616-4155",
+      "endereco": "Rua Carlos Walravem, 312",
+      "cpf": "080.969.783-14",
+      "cep": "60346672",
+      "nascimento": "2002-02-10",
+      "email": "",
+      "bairro": "Jardim Guanabara",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SKINK-MGR-NEW-1749141696113",
+        "nome": "1211M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086252044",
+        "nome": "1009RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 11.9,
+        "subtotal": 23.8
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 3,
+        "precoUnitario": 11.9,
+        "subtotal": 35.7
+      }
+    ],
+    "data": "2025-06-24T14:26:00.000Z",
+    "subtotal": 83.30000000000001,
+    "desconto": 8.330000000000002,
+    "frete": 0,
+    "total": 74.97000000000001,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 47,
+    "hora": "22:28:00",
+    "cliente": {
+      "nome": "Lucas Araujo Bezerra",
+      "whatsapp": "(85) 98616-4155",
+      "endereco": "Rua Carlos Walravem, 312",
+      "cpf": "080.969.783-14",
+      "cep": "60346672",
+      "nascimento": "2002-02-10",
+      "email": "",
+      "bairro": "Jardim Guanabara",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086252044",
+        "nome": "1009RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 11.9,
+        "subtotal": 23.8
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SKINK-MGR-NEW-1749141696113",
+        "nome": "1211M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-23T18:22:00.000Z",
+    "subtotal": 59.5,
+    "desconto": 0,
+    "frete": 0,
+    "total": 59.5,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 48,
+    "hora": "22:28:59",
+    "cliente": {
+      "nome": "Jonathan Sousa da Hora",
+      "whatsapp": "(85) 99934-4306",
+      "endereco": "Alameda Sandra Mara, 243",
+      "cpf": "069.609.965-97",
+      "cep": "60190270",
+      "nascimento": "1996-06-25",
+      "email": "",
+      "bairro": "Cidade 2000",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RS-NEW-1747086655677",
+        "nome": "1018RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086325924",
+        "nome": "1207RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "PROD-1748714054692",
+        "nome": "Stencil Termal ",
+        "marca": "EXTRAS",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 5.9,
+        "subtotal": 11.8
+      }
+    ],
+    "data": "2025-06-24T17:07:00.000Z",
+    "subtotal": 47.5,
+    "desconto": 0,
+    "frete": 0,
+    "total": 47.5,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 49,
+    "hora": "22:29:33",
+    "cliente": {
+      "nome": "Diana Coelho",
+      "whatsapp": "(85) 98506-7296",
+      "endereco": "",
+      "cpf": "068.928.703-84",
+      "cep": "",
+      "nascimento": "1996-01-06",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 9.78,
+        "subtotal": 48.9
+      }
+    ],
+    "data": "2025-06-13T17:22:00.000Z",
+    "subtotal": 48.9,
+    "desconto": 4.890000000000001,
+    "frete": 0,
+    "total": 44.01,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": false
+  },
+  {
+    "numero": 50,
+    "hora": "22:30:08",
+    "cliente": {
+      "nome": "Daniel Eduardo",
+      "whatsapp": "(85) 98934-2552",
+      "endereco": "Rua Doutor Oliveira Filho, 1160",
+      "cpf": "613.166.993-74",
+      "cep": "60181816",
+      "nascimento": "1996-03-24",
+      "email": "",
+      "bairro": "Vicente Pinzon",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086377396",
+        "nome": "1214RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086325924",
+        "nome": "1207RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-23T18:25:00.000Z",
+    "subtotal": 35.7,
+    "desconto": 0,
+    "frete": 0,
+    "total": 35.7,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 51,
+    "hora": "22:30:55",
+    "cliente": {
+      "nome": "Beatriz Souza",
+      "whatsapp": "11 985292770",
+      "endereco": "Rua fradique Coutinho, 546",
+      "cpf": "408.410.248-20",
+      "cep": "05416000",
+      "nascimento": "1994-08-28",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086618973",
+        "nome": "1209RS",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      }
+    ],
+    "data": "2025-06-27T17:23:00.000Z",
+    "subtotal": 440,
+    "desconto": 44,
+    "frete": 0,
+    "total": 396,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 52,
+    "hora": "22:32:43",
+    "cliente": {
+      "nome": "Beatriz Souza",
+      "whatsapp": "11 985292770",
+      "endereco": "Rua fradique Coutinho, 546",
+      "cpf": "408.410.248-20",
+      "cep": "05416000",
+      "nascimento": "1994-08-28",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SKINK-MGR-NEW-1749141696113",
+        "nome": "1211M2",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087122456",
+        "nome": "1221M2",
+        "marca": "SKINK",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 11,
+        "subtotal": 220
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086252044",
+        "nome": "1009RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086618973",
+        "nome": "1209RS",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      }
+    ],
+    "data": "2025-06-05T20:01:00.000Z",
+    "subtotal": 607.6999999999999,
+    "desconto": 60.769999999999996,
+    "frete": -19.93,
+    "total": 527,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 53,
+    "hora": "22:33:19",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RS-NEW-1747086618973",
+        "nome": "1209RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086883062",
+        "nome": "1019MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-06-23T12:59:00.000Z",
+    "subtotal": 47.6,
+    "desconto": 0,
+    "frete": 0,
+    "total": 47.6,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 59,
+    "hora": "23:19:13",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086638445",
+        "nome": "1214RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086337820",
+        "nome": "1209RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-25T03:57:00.000Z",
+    "subtotal": 35.7,
+    "desconto": 3.5700000000000003,
+    "frete": 0,
+    "total": 32.13,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 70,
+    "hora": "17:57:05",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 15,
+        "precoUnitario": 11.18,
+        "subtotal": 167.7
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SKINK-RS-NEW-1747678050527",
+        "nome": "1011RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 4,
+        "precoUnitario": 11.9,
+        "subtotal": 47.6
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SKINK-RS-NEW-1750815613148",
+        "nome": "1014RS",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086943407",
+        "nome": "1025MGR",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086975471",
+        "nome": "1041M2",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086975471",
+        "nome": "1041M2",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 11.9,
+        "subtotal": 23.8
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086252044",
+        "nome": "1009RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086252044",
+        "nome": "1009RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 4,
+        "precoUnitario": 11.9,
+        "subtotal": 47.6
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087064223",
+        "nome": "1209MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 3,
+        "precoUnitario": 11.9,
+        "subtotal": 35.7
+      }
+    ],
+    "data": "2025-05-21T01:00:00.000Z",
+    "subtotal": 849.2999999999998,
+    "desconto": 0,
+    "frete": 0,
+    "total": 849.2999999999998,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 71,
+    "hora": "18:00:15",
+    "cliente": {
+      "nome": "Ana Clara Felix",
+      "whatsapp": "991102144",
+      "endereco": "R. Sabino Pires, 95",
+      "cpf": "047.796.203-33",
+      "cep": "60150-090",
+      "nascimento": "",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SK-RLF-NEW-1747086452181",
+        "nome": "0607RLF",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086838550",
+        "nome": "1015MGR",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086892670",
+        "nome": "1021MGR",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      }
+    ],
+    "data": "2025-05-27T18:00:00.000Z",
+    "subtotal": 559,
+    "desconto": 55.900000000000006,
+    "frete": 0,
+    "total": 503.1,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 72,
+    "hora": "18:02:06",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090174678",
+        "nome": "1007RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090124286",
+        "nome": "1005RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1747090644257",
+        "nome": "1221MR",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086838550",
+        "nome": "1015MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-31T03:00:00.000Z",
+    "subtotal": 51.5,
+    "desconto": 5.15,
+    "frete": 0,
+    "total": 46.35,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 73,
+    "hora": "18:03:07",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086883062",
+        "nome": "1019MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-31T01:00:00.000Z",
+    "subtotal": 21.8,
+    "desconto": 2.18,
+    "frete": 0,
+    "total": 19.62,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 74,
+    "hora": "18:04:08",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RLF-NEW-1747086435413",
+        "nome": "0605RLF",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-27T01:00:00.000Z",
+    "subtotal": 11.9,
+    "desconto": 1.1900000000000002,
+    "frete": 0,
+    "total": 10.71,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 75,
+    "hora": "18:05:09",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086252044",
+        "nome": "1009RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086638445",
+        "nome": "1214RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-24T06:00:00.000Z",
+    "subtotal": 35.7,
+    "desconto": 3.5700000000000003,
+    "frete": 0,
+    "total": 32.13,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 76,
+    "hora": "18:06:16",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086638445",
+        "nome": "1214RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-24T01:00:00.000Z",
+    "subtotal": 23.8,
+    "desconto": 2.3800000000000003,
+    "frete": 0,
+    "total": 21.42,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 77,
+    "hora": "18:08:42",
+    "cliente": {
+      "nome": "Rafaela Silva Martins",
+      "whatsapp": "(85) 99998-4013",
+      "endereco": "Rua Doutor Gilberto Studart, 728 - Cocó",
+      "cpf": "088.898.383-29",
+      "cep": "60192105",
+      "nascimento": "2001-08-27",
+      "email": "",
+      "bairro": "Cocó",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 9.78,
+        "subtotal": 48.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SKINK-RS-NEW-1747678050527",
+        "nome": "1011RS",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086943407",
+        "nome": "1025MGR",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      }
+    ],
+    "data": "2025-05-25T15:00:00.000Z",
+    "subtotal": 216.6,
+    "desconto": 21.66,
+    "frete": -39,
+    "total": 155.94,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 78,
+    "hora": "18:09:29",
+    "cliente": {
+      "nome": "Nathan Nogueira Rodrigues",
+      "whatsapp": "(85) 99800-3795",
+      "endereco": "Rua Doutor Jose Augusto Ribeiro, 225, Mucuripe",
+      "cpf": "067.856.453-10",
+      "cep": "60176342",
+      "nascimento": "1995-06-15",
+      "email": "",
+      "bairro": "Mucuripe",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 9.78,
+        "subtotal": 48.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-26T17:00:00.000Z",
+    "subtotal": 60.8,
+    "desconto": 6.08,
+    "frete": 0,
+    "total": 54.72,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 79,
+    "hora": "18:14:11",
+    "cliente": {
+      "nome": "Luiza Pucca",
+      "whatsapp": "(85) 99087-8531",
+      "endereco": "",
+      "cpf": "443.334.868-66",
+      "cep": "",
+      "nascimento": "1999-12-10",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086233108",
+        "nome": "1005RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086377396",
+        "nome": "1214RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086377396",
+        "nome": "1214RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 3,
+        "precoUnitario": 11.9,
+        "subtotal": 35.7
+      },
+      {
+        "codigo": "SK-RS-NEW-1747086638445",
+        "nome": "1214RS",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 3,
+        "precoUnitario": 11.9,
+        "subtotal": 35.7
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086778326",
+        "nome": "1009MGR",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 11.18,
+        "subtotal": 55.9
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086778326",
+        "nome": "1009MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1747090540936",
+        "nome": "1015MR",
+        "marca": "VXCRAFT",
+        "tipo": "5un",
+        "quantidade": 5,
+        "precoUnitario": 9.78,
+        "subtotal": 48.9
+      },
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1747090540936",
+        "nome": "1015MR",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      }
+    ],
+    "data": "2025-05-23T20:00:00.000Z",
+    "subtotal": 377.5999999999999,
+    "desconto": 18.879999999999995,
+    "frete": 0,
+    "total": 358.7199999999999,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 80,
+    "hora": "18:14:49",
+    "cliente": {
+      "nome": "Diana Coelho",
+      "whatsapp": "(85) 98506-7296",
+      "endereco": "",
+      "cpf": "068.928.703-84",
+      "cep": "",
+      "nascimento": "1996-01-06",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086278116",
+        "nome": "1011RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-05-23T15:00:00.000Z",
+    "subtotal": 35.7,
+    "desconto": 3.5700000000000003,
+    "frete": 0,
+    "total": 32.13,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 81,
+    "hora": "18:15:48",
+    "cliente": {
+      "nome": "Isis mariana ",
+      "whatsapp": "(85) 996327-6334",
+      "endereco": "",
+      "cpf": "042.952.223-13",
+      "cep": "",
+      "nascimento": "1997-01-18",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RLF-NEW-1747090376735",
+        "nome": "0603RLF",
+        "marca": "VXCRAFT",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 9,
+        "subtotal": 180
+      }
+    ],
+    "data": "2025-05-27T16:00:00.000Z",
+    "subtotal": 180,
+    "desconto": 18,
+    "frete": -2,
+    "total": 160,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "IM",
+    "pago": true
+  },
+  {
+    "numero": 82,
+    "hora": "20:47:49",
+    "cliente": {
+      "nome": "Andre  Fialho",
+      "whatsapp": "(85) 99219-9920",
+      "endereco": "Av. Barão de Studart, 2360 - Dionísio",
+      "cpf": "011.266.943-39",
+      "cep": "60120-002",
+      "nascimento": "1984-07-01",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RLF-NEW-1747086452181",
+        "nome": "0607RLF",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      },
+      {
+        "codigo": "SKINK-RL-NEW-1751225319072",
+        "nome": "1007RL",
+        "marca": "SKINK",
+        "tipo": "5un",
+        "quantidade": 10,
+        "precoUnitario": 11.18,
+        "subtotal": 111.8
+      }
+    ],
+    "data": "2025-05-18T01:00:00.000Z",
+    "subtotal": 223.6,
+    "desconto": 0,
+    "frete": 0.4,
+    "total": 224,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "",
+    "pago": true
+  },
+  {
+    "numero": 84,
+    "hora": "12:21:36",
+    "cliente": {
+      "nome": "Nathan Nogueira Rodrigues",
+      "whatsapp": "(85) 99800-3795",
+      "endereco": "Rua Doutor Jose Augusto Ribeiro, 225, Mucuripe",
+      "cpf": "067.856.453-10",
+      "cep": "60176342",
+      "nascimento": "1995-06-15",
+      "email": "",
+      "bairro": "Mucuripe",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 11.9,
+        "subtotal": 23.8
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086943407",
+        "nome": "1025MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090195951",
+        "nome": "1009RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 9.9,
+        "subtotal": 19.8
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "PROD-1748714054692",
+        "nome": "Stencil Termal ",
+        "marca": "EXTRAS",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 5.9,
+        "subtotal": 11.8
+      }
+    ],
+    "data": "2025-07-11T00:00:00.000Z",
+    "subtotal": 77.2,
+    "desconto": 7.720000000000001,
+    "frete": 0,
+    "total": 69.48,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 85,
+    "hora": "12:25:35",
+    "cliente": {
+      "nome": "Raylson Barbosa",
+      "whatsapp": "(85) 998843-8434",
+      "endereco": "Rua planalto do Pici, 720",
+      "cpf": "608.329.023-65",
+      "cep": "60440-140",
+      "nascimento": "1996-04-11",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RLF-NEW-1747086452181",
+        "nome": "0607RLF",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 11.9,
+        "subtotal": 23.8
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747087064223",
+        "nome": "1209MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086216692",
+        "nome": "1003RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 2,
+        "precoUnitario": 11.9,
+        "subtotal": 23.8
+      },
+      {
+        "codigo": "SK-MGR-NEW-1747086883062",
+        "nome": "1019MGR",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      }
+    ],
+    "data": "2025-07-11T00:00:00.000Z",
+    "subtotal": 71.4,
+    "desconto": 3.5700000000000003,
+    "frete": 0,
+    "total": 67.83000000000001,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": false
+  },
+  {
+    "numero": 86,
+    "hora": "12:35:53",
+    "cliente": {
+      "nome": "Rafaela Silva Martins",
+      "whatsapp": "(85) 99998-4013",
+      "endereco": "Rua Doutor Gilberto Studart, 728 - Cocó",
+      "cpf": "088.898.383-29",
+      "cep": "60192105",
+      "nascimento": "2001-08-27",
+      "email": "",
+      "bairro": "Cocó",
+      "cidade": "Fortaleza",
+      "estado": "CE"
+    },
+    "produtos": [
+      {
+        "codigo": "SK-RLF-NEW-1747086452181",
+        "nome": "0607RLF",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 4,
+        "precoUnitario": 11.9,
+        "subtotal": 47.6
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090243878",
+        "nome": "1209RL",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "SK-RL-NEW-1747086301164",
+        "nome": "1014RL",
+        "marca": "SKINK",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 11.9,
+        "subtotal": 11.9
+      },
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1747090540936",
+        "nome": "1015MR",
+        "marca": "VXCRAFT",
+        "tipo": "unidade",
+        "quantidade": 1,
+        "precoUnitario": 9.9,
+        "subtotal": 9.9
+      },
+      {
+        "codigo": "PROD-1748714054692",
+        "nome": "Stencil Termal ",
+        "marca": "EXTRAS",
+        "tipo": "unidade",
+        "quantidade": 4,
+        "precoUnitario": 5.9,
+        "subtotal": 23.6
+      }
+    ],
+    "data": "2025-07-11T00:00:00.000Z",
+    "subtotal": 112.80000000000001,
+    "desconto": 5.640000000000001,
+    "frete": 0,
+    "total": 107.16000000000001,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": true
+  },
+  {
+    "numero": 87,
+    "hora": "05:18:57",
+    "cliente": {
+      "nome": "Camilla Campos Marinho",
+      "whatsapp": "88 999031886",
+      "endereco": "Rua Turquesa, 1172",
+      "cpf": "605.323.793-06",
+      "cep": "60732485",
+      "nascimento": "1994-10-28",
+      "email": "",
+      "bairro": "",
+      "cidade": "",
+      "estado": ""
+    },
+    "produtos": [
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747089992862",
+        "nome": "1003RL",
+        "marca": "VXCRAFT",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 9,
+        "subtotal": 180
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090174678",
+        "nome": "1007RL",
+        "marca": "VXCRAFT",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 9,
+        "subtotal": 180
+      },
+      {
+        "codigo": "VXCRAFT-RL-NEW-1747090195951",
+        "nome": "1009RL",
+        "marca": "VXCRAFT",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 9,
+        "subtotal": 180
+      },
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1747090526272",
+        "nome": "1011MR",
+        "marca": "VXCRAFT",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 9,
+        "subtotal": 180
+      },
+      {
+        "codigo": "VXCRAFT-MGR-NEW-1747090540936",
+        "nome": "1015MR",
+        "marca": "VXCRAFT",
+        "tipo": "caixa",
+        "quantidade": 20,
+        "precoUnitario": 9,
+        "subtotal": 180
+      }
+    ],
+    "data": "2025-07-16T00:00:00.000Z",
+    "subtotal": 900,
+    "desconto": 90,
+    "frete": 0,
+    "total": 810,
+    "forma_pagamento": "Pix",
+    "destino_desconto": "RF",
+    "pago": false
+  }
+]

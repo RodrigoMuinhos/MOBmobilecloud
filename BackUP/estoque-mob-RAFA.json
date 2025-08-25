@@ -1,0 +1,394 @@
+{
+  "SKINK INK": {
+    "RL": []
+  },
+  "SKIN INK": {
+    "RL": [
+      {
+        "codigo": "SKIN INK-RL-1753036399448",
+        "nome": "1003RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 6,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753037681779",
+        "nome": "1005RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 11,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753037682008",
+        "nome": "1207RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 3,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753037682208",
+        "nome": "1009RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 6,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753037682433",
+        "nome": "1011RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 5,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753037682617",
+        "nome": "1014RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 7,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753037683177",
+        "nome": "0607RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 10,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753047638760",
+        "nome": "0807RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 6,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753047656004",
+        "nome": "0805RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 11,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RL-NEW-1753047656564",
+        "nome": "0605RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      }
+    ],
+    "RS": [
+      {
+        "codigo": "SKIN INK-RS-NEW-1753047801043",
+        "nome": "1205RS",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RS-NEW-1753048447115",
+        "nome": "1214RS",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 10,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RS-NEW-1753048447291",
+        "nome": "1209RS",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 7,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-RS-NEW-1753048447443",
+        "nome": "1207RS",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      }
+    ],
+    "MGR": [
+      {
+        "codigo": "SKIN INK-MGR-1753036415504",
+        "nome": "1007MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 22,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753037686247",
+        "nome": "1009MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753037686424",
+        "nome": "1207MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 5,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753037686592",
+        "nome": "1209MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 3,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753037686793",
+        "nome": "1015MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 7,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753037686928",
+        "nome": "1019MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 6,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753037687393",
+        "nome": "1025MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753047957773",
+        "nome": "1217MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 2,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-MGR-NEW-1753047958189",
+        "nome": "1021MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      }
+    ],
+    "M2": [
+      {
+        "codigo": "SKIN INK-M2-1753036427568",
+        "nome": "1209M2",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 5,
+        "unidades_por_caixa": 20
+      },
+      {
+        "codigo": "SKIN INK-M2-NEW-1753037690305",
+        "nome": "1215M2",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 200,
+        "caixas": 1,
+        "unidades_por_caixa": 20
+      }
+    ]
+  },
+  "VX": {
+    "RL": [
+      {
+        "codigo": "VX-RL-1753036480296",
+        "nome": "VX RL",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RL-NEW-1753037692928",
+        "nome": "VX RL Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RL-NEW-1753037693113",
+        "nome": "VX RL Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RL-NEW-1753037693297",
+        "nome": "VX RL Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RL-NEW-1753037693473",
+        "nome": "VX RL Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RL-NEW-1753037693648",
+        "nome": "VX RL Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RL-NEW-1753037693825",
+        "nome": "VX RL Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      }
+    ],
+    "RS": [
+      {
+        "codigo": "VX-RS-1753036500480",
+        "nome": "VX RS",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RS-NEW-1753037695449",
+        "nome": "VX RS Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RS-NEW-1753037695627",
+        "nome": "VX RS Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-RS-NEW-1753037695817",
+        "nome": "VX RS Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      }
+    ],
+    "MGR": [
+      {
+        "codigo": "VX-MGR-1753036506415",
+        "nome": "VX MGR",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-MGR-NEW-1753037697712",
+        "nome": "VX MGR Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-MGR-NEW-1753037697881",
+        "nome": "VX MGR Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      },
+      {
+        "codigo": "VX-MGR-NEW-1753037725328",
+        "nome": "VX MGR Novo",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      }
+    ],
+    "M2": [
+      {
+        "codigo": "VX-M2-1753036514367",
+        "nome": "VX M2",
+        "quantidade_em_estoque": 0,
+        "preco_unit": 0,
+        "preco_caixa": 0,
+        "caixas": 0,
+        "unidades_por_caixa": 5
+      }
+    ]
+  }
+}

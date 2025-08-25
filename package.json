@@ -1,0 +1,69 @@
+{
+  "name": "mob-supply",
+  "version": "1.0.4",
+  "description": "Sistema de gestão MOB Supply",
+  "author": "Rodrigo Muinhos",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "build": "cd frontend && vite build",
+    "preview": "cd frontend && vite preview",
+    "electron:dev": "electron .",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.rodrigo.mobsupply",
+    "productName": "MOB Supply",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "frontend/dist/**/*",
+      "electron/main.js",
+      "electron/preload.js"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "MOB Supply"
+    }
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.1.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^9.2.0",
+    "electron": "^29.0.0",
+    "electron-builder": "^23.6.0",
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.0",
+    "vite": "^7.0.5"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.12.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
+    "multer": "^2.0.2",
+    "pdfmake": "^0.2.20",
+    "prisma": "^6.12.0",
+    "react-input-mask": "^2.0.4",
+    "react-toastify": "^11.0.5",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.0.10"
+  }
+}

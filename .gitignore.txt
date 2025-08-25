@@ -1,0 +1,43 @@
+# Dependências
+node_modules/
+**/node_modules/
+
+# Build
+dist/
+build/
+**/dist/
+**/build/
+
+# Arquivos de configuração locais
+.env
+.env.*.local
+*.log
+.vscode/
+*.yml
+*.yaml
+*.tgz
+
+# Arquivos do Electron
+win-unpacked/
+*.exe
+*.dmg
+*.app
+*.asar
+
+# Prisma
+*.sqlite
+*.db
+*.db-journal
+**/prisma/migrations/
+
+# Outros
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+*.bak
+*.tmp
+*.swp

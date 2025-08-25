@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * =========================
+ * CORE DE CLIENTES & VENDAS
+ * =========================
+ */
+
+model Cliente {
+  id         String    @id @default(uuid())
+  nome       String
+  cpf        String    @unique
+  nascimento DateTime?
+  whatsapp   String?
+  cidade     String?
+  estado     String?
+  endereco   String?
+  criadoEm   DateTime  @default(now())
+  cep        String?
+
+  vendas Venda[]
+}
+
+enum StatusPagamento {
+  PENDENTE
+  PAGO
+  CANCELADO
+}
+
+model Venda {
+  id                 String          @id @default(uuid())
+  data               DateTime
+  clienteId          String
+  clienteNome        String
+  carrinho           Json
+  subtotal           Float
+  totalFinal         Float
+  descontoPercentual Float?
+  descontoValor      Float?
+  destinoDesconto    String?
+  frete              Float?
+  acrescimo          Float?
+  formaPagamento     String
+  parcelas           Int?
+  status_pagamento   StatusPagamento
+  observacoes        String
+
+  cliente  Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  filialId String
+  filial   Filial  @relation(fields: [filialId], references: [id], onDelete: Cascade)
+
+  @@index([filialId, data])
+}
+
+/**
+ * =========================
+ * ESTOQUE / CATEGORIAS
+ * =========================
+ */
+
+model CategoriaEstoque {
+  id       String  @id @default(uuid())
+  marca    String
+  tipo     String
+
+  // 🔒 Recomendado obrigatório para unicidade real por filial
+  filialId String
+  filial   Filial  @relation("FilialCategorias", fields: [filialId], references: [id])
+
+  // ⬅ back-relation para ProdutoEstoque
+  produtos ProdutoEstoque[] @relation("CategoriaProdutos")
+
+  @@unique([marca, tipo, filialId], name: "marca_tipo_filial")
+  @@index([filialId])
+}
+
+model Estoque {
+  id          String  @id @default(uuid())
+  nome        String
+  cidade      String
+  estado      String?
+  observacoes String?
+
+  // Estoque atrelado a uma filial (opcional)
+  filialId String?
+  filial   Filial? @relation(fields: [filialId], references: [id])
+
+  produtos  ProdutoEstoque[]
+  criado_em DateTime @default(now())
+
+  // @@unique([nome, cidade, estado])
+  @@index([filialId])
+}
+
+model ProdutoEstoque {
+  id                    String   @id @default(uuid())
+  codigo                String
+  nome                  String
+  tipo                  String
+  marca                 String
+  preco_compra          Float
+  preco_venda_unidade   Float
+  preco_venda_caixa     Float
+  quantidade_em_estoque Int
+  unidades_por_caixa    Int
+  caixas                Int
+  criado_em             DateTime @default(now())
+
+  // 🔗 Categoria
+  categoriaId String
+  categoria   CategoriaEstoque @relation("CategoriaProdutos", fields: [categoriaId], references: [id])
+
+  // 🔗 Multi-estoques: cada item pertence a um estoque
+  estoqueId String
+  estoque   Estoque @relation(fields: [estoqueId], references: [id])
+
+  // 🔗 Compatibilidade/relatórios: filial opcional
+  filialId String?
+  filial   Filial? @relation(fields: [filialId], references: [id])
+
+  movimentos            MovimentoEstoque[]
+  transferenciasOrigem  TransferenciaEstoque[] @relation("ProdutoOrigem")
+  transferenciasDestino TransferenciaEstoque[] @relation("ProdutoDestino")
+
+  // Código único dentro do estoque
+  @@unique([estoqueId, codigo], name: "codigo_por_estoque_unico")
+  @@index([estoqueId])
+  @@index([categoriaId])
+  @@index([filialId])
+}
+
+/**
+ * =========================
+ * USUÁRIOS / EQUIPE
+ * =========================
+ */
+
+model Usuario {
+  id           String   @id @default(uuid())
+  nome         String
+  email        String   @unique
+  senha        String
+  tipo         String
+  cidade       String?
+  cpf          String   @unique
+  nascimento   DateTime
+  whatsapp     String
+  avatar       String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  filialId String?
+  filial   Filial? @relation(fields: [filialId], references: [id])
+
+  @@index([filialId])
+}
+
+model Membro {
+  id       String  @id @default(uuid())
+  nome     String
+  avatar   String?
+  usos     Int     @default(0)
+  comissao Float   @default(0)
+  salvo    Boolean @default(true)
+  cargo    String?
+}
+
+/**
+ * =========================
+ * FILIAIS (UF/ESTADOS)
+ * =========================
+ */
+
+model Filial {
+  id     String  @id @default(uuid())
+  nome   String
+  uf     String
+  slug   String  @unique
+  ativa  Boolean @default(true)
+  corHex String?
+  icone  String?
+
+  criadoEm DateTime @default(now())
+
+  // back-relations
+  categorias CategoriaEstoque[] @relation("FilialCategorias")
+  estoque    ProdutoEstoque[]
+  vendas     Venda[]
+  usuarios   Usuario[]
+  movimentos MovimentoEstoque[]
+
+  transferenciasOrigem  TransferenciaEstoque[] @relation("TransferenciasOrigem")
+  transferenciasDestino TransferenciaEstoque[] @relation("TransferenciasDestino")
+  Estoque               Estoque[]
+
+  @@index([nome])
+  @@index([uf])
+}
+
+/**
+ * =========================================
+ * MOVIMENTAÇÃO & TRANSFERÊNCIA DE ESTOQUE
+ * =========================================
+ */
+
+enum TipoMovimento {
+  ENTRADA
+  SAIDA
+  AJUSTE
+  TRANSFERENCIA
+  VENDA
+}
+
+model MovimentoEstoque {
+  id         String        @id @default(uuid())
+  data       DateTime      @default(now())
+  tipo       TipoMovimento
+  quantidade Int
+  saldoApos  Int?
+
+  produtoId String
+  produto   ProdutoEstoque @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  filialId String
+  filial   Filial @relation(fields: [filialId], references: [id], onDelete: Cascade)
+
+  vendaId         String?
+  transferenciaId String?
+
+  @@index([filialId, data])
+  @@index([produtoId, data])
+}
+
+model TransferenciaEstoque {
+  id            String   @id @default(uuid())
+  data          DateTime @default(now())
+  produtoNome   String
+  produtoCodigo String?
+  quantidade    Int
+  observacao    String?
+
+  origemFilialId  String
+  origemFilial    Filial @relation("TransferenciasOrigem", fields: [origemFilialId], references: [id], onDelete: Cascade)
+
+  destinoFilialId String
+  destinoFilial   Filial @relation("TransferenciasDestino", fields: [destinoFilialId], references: [id], onDelete: Cascade)
+
+  produtoOrigemId String?
+  produtoOrigem   ProdutoEstoque? @relation("ProdutoOrigem", fields: [produtoOrigemId], references: [id], onDelete: Cascade)
+
+  produtoDestinoId String?
+  produtoDestino   ProdutoEstoque? @relation("ProdutoDestino", fields: [produtoDestinoId], references: [id], onDelete: Cascade)
+
+  @@index([origemFilialId, data])
+  @@index([destinoFilialId, data])
+}
