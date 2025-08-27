@@ -1,3 +1,4 @@
+// src/features/vendas/components/cliente/EtapaCliente.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../../../context/ThemeContext';
@@ -29,16 +30,59 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
     borderColor: temaAtual.contraste,
   };
 
+  // ----------------- Helpers seguros -----------------
+  const soDigitos = (s?: string) => (s ?? '').replace(/\D/g, '');
+
+  const aplicarMascara = {
+    whatsapp: (v?: string) => {
+      const limpo = soDigitos(v).slice(0, 11);
+      return limpo.length <= 10
+        ? limpo.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3')
+        : limpo.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
+    },
+    cep: (v?: string) =>
+      soDigitos(v).slice(0, 8).replace(/^(\d{5})(\d{0,3})/, '$1-$2'),
+  };
+
+  const capitalizar = (texto?: string): string =>
+    (texto ?? '')
+      .toLowerCase()
+      .replace(/(?:^|\s)\S/g, (l) => l.toUpperCase());
+
+  const normalizar = (s?: string) =>
+    (s ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+  // ----------------- Carrega clientes -----------------
   useEffect(() => {
     const buscarClientes = async () => {
       try {
         const res = await api.get('/clientes');
 
-        const lista = Array.isArray(res.data)
+        const brutos = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data?.clientes)
           ? res.data.clientes
           : [];
+
+const lista: Cliente[] = brutos
+  .map((c: any): Cliente => ({
+    ...c,
+    nome: c?.nome ?? '',
+    cpf: c?.cpf ?? '',
+    whatsapp: c?.whatsapp ?? '',
+    endereco: c?.endereco ?? '',
+    cep: c?.cep ?? '',
+    estado: c?.estado ?? c?.uf ?? '',
+    uf: c?.uf ?? c?.estado ?? '',
+    cidade: c?.cidade ?? '',
+    nascimento: c?.nascimento ?? '',
+  }))
+  .filter((c: Cliente) => soDigitos(c.cpf).length > 0);
+
+       
 
         setClientesSalvos(lista);
       } catch (err) {
@@ -52,9 +96,10 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
     buscarClientes();
   }, []);
 
+  // ----------------- Auto-preenche endereço por CEP -----------------
   useEffect(() => {
     const buscarEnderecoPorCEP = async () => {
-      const cepLimpo = cliente.cep.replace(/\D/g, '');
+      const cepLimpo = soDigitos(cliente.cep);
       if (cepLimpo.length !== 8) return;
 
       try {
@@ -66,7 +111,7 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
         setCliente({
           ...cliente,
           endereco: capitalizar(data.logradouro || cliente.endereco),
-          bairro: capitalizar(data.bairro || cliente.bairro),
+          bairro: capitalizar(data.bairro || (cliente as any).bairro),
           cidade: capitalizar(data.localidade || cliente.cidade),
           estado: data.uf || cliente.estado,
           uf: data.uf || cliente.uf,
@@ -76,49 +121,39 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
       }
     };
 
-    if (cliente.cep.length === 9) {
+    if (soDigitos(cliente.cep).length === 8) {
       buscarEnderecoPorCEP();
     }
   }, [cliente.cep]);
 
-  const aplicarMascara = {
-    whatsapp: (v: string) => {
-      const limpo = v.replace(/\D/g, '').slice(0, 11);
-      return limpo.length <= 10
-        ? limpo.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3')
-        : limpo.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
-    },
-    cep: (v: string) =>
-      v.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d{0,3})/, '$1-$2'),
-  };
-
-  const capitalizar = (texto: string): string =>
-    texto.toLowerCase().replace(/(?:^|\s)\S/g, (l) => l.toUpperCase());
-
-  const normalizar = (s: string) =>
-    s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
+  // ----------------- Preenche formulário a partir de um cliente salvo -----------------
   const preencherCliente = (c: Cliente) => {
     setCliente({
       id: c.id?.length === 36 ? c.id : '',
       criadoEm: c.criadoEm || new Date().toISOString(),
-      nome: capitalizar(c.nome || ''),
+      nome: capitalizar(c.nome),
       cpf: formatarCPF(c.cpf || ''),
-      whatsapp: aplicarMascara.whatsapp(c.whatsapp || ''),
-      endereco: capitalizar(c.endereco || ''),
-      cep: aplicarMascara.cep(c.cep || ''),
+      whatsapp: aplicarMascara.whatsapp(c.whatsapp),
+      endereco: capitalizar(c.endereco),
+      cep: aplicarMascara.cep(c.cep),
       estado: c.estado || '',
       nascimento: c.nascimento || '',
       uf: c.uf || '',
-      cidade: capitalizar(c.cidade || ''),
+      cidade: capitalizar(c.cidade),
     });
+  };
+
+  // ----------------- Handlers -----------------
+  const selecionarSugestao = (c: Cliente) => {
+    preencherCliente(c);
+    setSugestoes([]);
   };
 
   const handleNome = (nome: string) => {
     const nomeFormatado = capitalizar(nome);
     setCliente({ ...cliente, nome: nomeFormatado });
 
-    if (nome.length < 1) {
+    if ((nome ?? '').length < 1) {
       setSugestoes([]);
       return;
     }
@@ -134,31 +169,29 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
     if (clienteExato) preencherCliente(clienteExato);
   };
 
-  const selecionarSugestao = (c: Cliente) => {
-    preencherCliente(c);
-    setSugestoes([]);
-  };
-
   const handleCpf = (valor: string) => {
-    const cpf = formatarCPF(valor);
-    setCliente({ ...cliente, cpf });
+    const cpfFormatado = formatarCPF(valor ?? '');
+    setCliente({ ...cliente, cpf: cpfFormatado });
 
-    const valido = validarCPF(cpf);
+    const valido = validarCPF(cpfFormatado);
     setCpfValido(valido);
 
+    const cpfNum = soDigitos(cpfFormatado);
+
     const jaExiste = clientesSalvos.some(
-      (c) => c.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, '')
+      (c) => soDigitos(c.cpf) === cpfNum
     );
     setCpfJaCadastrado(jaExiste);
 
     if (jaExiste) {
       const encontrado = clientesSalvos.find(
-        (c) => c.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, '')
+        (c) => soDigitos(c.cpf) === cpfNum
       );
       if (encontrado) preencherCliente(encontrado);
     }
   };
 
+  // ----------------- Render -----------------
   return (
     <div className="space-y-4">
       {carregandoClientes && (
@@ -184,7 +217,7 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
                 left: 0,
                 backgroundColor: temaAtual.card,
                 color: temaAtual.texto,
-                border: `1px solid ${temaAtual.contraste}`
+                border: `1px solid ${temaAtual.contraste}`,
               }}
               className="rounded w-full max-h-48 overflow-auto shadow"
             >
@@ -268,13 +301,13 @@ const EtapaCliente: React.FC<Props> = ({ cliente, setCliente }) => {
         </div>
 
         <div className="flex gap-2 items-center">
- <input
-  type="date"
-  className="border p-2 rounded w-full"
-  value={cliente.nascimento ? cliente.nascimento.slice(0, 10) : ''}
-  onChange={(e) => setCliente({ ...cliente, nascimento: e.target.value })}
-  style={inputStyle}
-/>
+          <input
+            type="date"
+            className="border p-2 rounded w-full"
+            value={cliente.nascimento ? cliente.nascimento.slice(0, 10) : ''}
+            onChange={(e) => setCliente({ ...cliente, nascimento: e.target.value })}
+            style={inputStyle}
+          />
           <BotaoSalvarCliente cliente={cliente} />
         </div>
       </div>

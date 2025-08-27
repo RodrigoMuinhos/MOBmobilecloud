@@ -177,7 +177,7 @@ export function exportarEstoquePdf(itens: ProdutoEstoqueAPI[], op?: Opcoes) {
       1: { cellWidth: 150 },
       2: { cellWidth: 130 },
       3: { cellWidth: 170 },
-      4: { cellWidth: 0 }, // ocupa o restante se sobrar
+      4: { cellWidth: 0 }, 
     },
     margin: { left: 18, right: 18 },
     tableLineColor: [220,220,220],

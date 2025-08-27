@@ -1,3 +1,4 @@
+// src/features/vendas/components/botao/BotaoSalvarCliente.tsx
 'use client';
 import React from 'react';
 import { Cliente } from '../../../../types/domain/cliente.types';
@@ -10,49 +11,80 @@ interface Props {
   cliente: Cliente;
 }
 
+type ClientePayload = {
+  id?: string;
+  nome: string;
+  cpf: string;                  // só dígitos
+  whatsapp?: string | null;     // só dígitos ou null
+  endereco?: string | null;
+  cep?: string | null;          // só dígitos ou null
+  estado?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  nascimento?: string | undefined; // ISO ou undefined
+};
+
 const BotaoSalvarCliente: React.FC<Props> = ({ cliente }) => {
   const { temaAtual } = useTheme();
   const { language } = useLanguage();
   const t = language.clientes;
 
+  const soDigitos = (v?: string) => (v ? v.replace(/\D/g, '') : '');
+  const toNull = (s?: string) => (s && s.trim() !== '' ? s.trim() : null);
+
+  const montarPayloadCliente = (c: Cliente): ClientePayload => {
+    const idValido = c.id && c.id.length === 36 ? c.id : undefined;
+
+    const nascimentoISO =
+      c.nascimento && c.nascimento.trim() !== ''
+        ? new Date(c.nascimento).toISOString()
+        : undefined;
+
+    return {
+      ...(idValido ? { id: idValido } : {}),
+      nome: (c.nome || '').trim(),
+      cpf: soDigitos(c.cpf),
+      whatsapp: toNull(soDigitos(c.whatsapp)),
+      endereco: toNull(c.endereco),
+      cep: toNull(soDigitos(c.cep)),
+      estado: toNull(c.estado),
+      cidade: toNull(c.cidade),
+      uf: toNull(c.uf || c.estado),
+      nascimento: nascimentoISO, // undefined se vazio
+    };
+  };
+
   const handleSalvar = async () => {
-    const nome = cliente?.nome?.trim();
-    const cpf = cliente?.cpf?.replace(/\D/g, '').trim();
+    const nome = (cliente?.nome ?? '').trim();
+    const cpf = soDigitos(cliente?.cpf);
 
     if (!nome || !cpf) {
       alert(t.alertPreenchaCampos || '⚠️ Preencha nome e CPF para salvar.');
       return;
     }
 
-const clienteParaSalvar: Partial<Cliente> = {
-  ...(cliente.id?.length === 36 ? { id: cliente.id } : {}),
-  nome,
-  cpf: cliente.cpf.replace(/\D/g, ''),
-  whatsapp: cliente.whatsapp || '',
-  endereco: cliente.endereco || '',
-  cep: cliente.cep || '',
-  estado: cliente.estado || '',
-  nascimento: cliente.nascimento?.trim() || undefined, // ✅ aqui está corrigido
-  uf: cliente.uf || cliente.estado || '',
-  cidade: cliente.cidade || 'Fortaleza',
-};
-
-
+    const payload = montarPayloadCliente(cliente);
 
     try {
-      const response = await api.post('/clientes', clienteParaSalvar);
+      const response = await api.post('/clientes', payload);
 
       if (response.status === 201 || response.status === 200) {
         alert(t.alertSalvo || '✅ Cliente salvo com sucesso!');
-        // opcional: setCliente(clienteVazio); ← se quiser resetar depois
+        // Se quiser limpar no pai, passe setCliente via props e resete lá.
       }
     } catch (error: any) {
-      if (error.response?.status === 409) {
+      const status = error?.response?.status;
+      const msg = error?.response?.data?.erro;
+
+      if (status === 409) {
         alert(t.alertClienteExiste || '👤 Cliente com esse CPF já está cadastrado.');
+      } else if (status === 400) {
+        alert(msg || t.alertErro || '❌ Erro ao salvar cliente. Dados inválidos.');
       } else {
         alert(t.alertErro || '❌ Erro ao salvar cliente. Verifique a conexão.');
-        console.error('Erro ao salvar cliente:', error);
       }
+
+      console.error('Erro ao salvar cliente:', error?.response?.data || error);
     }
   };
 
