@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import { prisma } from '../prisma';
+
 import { v4 as uuid } from 'uuid';
 import { ClienteCreateSchema, ClienteUpdateSchema } from '../validators/cliente.schema';
 import { normalizeCPF, normalizeCEP, normalizeWhatsapp } from '../utils/normalizers';
 import { validarCPF } from '../utils/cpf';
-import type { Prisma } from '../generated/prisma';
+import type { Prisma } from '@prisma/client';
+import { prisma } from '../prisma';
 
 // ---------- Helpers ----------
 export const mapIn = (body: any) => {

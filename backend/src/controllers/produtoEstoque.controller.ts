@@ -3,18 +3,39 @@ import { prisma } from '../prisma';
 import { v4 as uuidv4 } from 'uuid';
 
 /* ----------------------- helpers numéricos coerentes ---------------------- */
-const toNumber = (v: any): number => (v === null || v === undefined || v === '' ? NaN : Number(v));
-const toNonNegInt = (v: any, def = 0): number => {
+const toNumber = (v: unknown): number =>
+  v === null || v === undefined || v === '' ? NaN : Number(v);
+
+const toNonNegInt = (v: unknown, def = 0): number => {
   const n = Math.trunc(Number(v));
   return Number.isFinite(n) && n >= 0 ? n : def;
 };
-const min1Int = (v: any, def = 1): number => {
+
+const min1Int = (v: unknown, def = 1): number => {
   const n = Math.trunc(Number(v));
   return Number.isFinite(n) && n >= 1 ? n : def;
 };
-const coercePreco = (v: any, def = 0): number => {
+
+const coercePreco = (v: unknown, def = 0): number => {
   const n = Number(v);
   return Number.isFinite(n) && n >= 0 ? n : def;
+};
+
+/* ---------------------- tipos auxiliares para inputs ---------------------- */
+type ProdutoEstoqueInput = {
+  id?: string;
+  nome: string;
+  codigo?: string | null;
+  marca?: string | null;
+  tipo?: string | null;
+  preco_compra?: number | null;
+  preco_venda_unidade?: number | null;
+  preco_venda_caixa?: number | null;
+  quantidade_em_estoque?: number | null;
+  unidades_por_caixa?: number | null;
+  caixas?: number | null;
+  categoriaId?: string | null;
+  estoqueId?: string | null;
 };
 
 /* ==========================================================================
@@ -54,7 +75,7 @@ export const listarEstoqueComCategorias = async (req: Request, res: Response) =>
       orderBy: [{ marca: 'asc' }, { tipo: 'asc' }, { nome: 'asc' }],
     });
 
-    const resposta = produtos.map((p) => ({
+    const resposta = produtos.map((p: typeof produtos[number]) => ({
       ...p,
       caixas: p.caixas ?? 0,
       filialId: p.filialId ?? null,
@@ -113,7 +134,7 @@ export const salvarProdutoEstoque = async (req: Request, res: Response) => {
     caixas = 0,
     categoriaId,
     estoqueId,
-  } = req.body;
+  } = (req.body || {}) as ProdutoEstoqueInput;
 
   if (!nome?.trim()) return res.status(400).json({ erro: 'Campo nome é obrigatório.' });
   if (!estoqueId) return res.status(400).json({ erro: 'estoqueId é obrigatório.' });
@@ -138,7 +159,7 @@ export const salvarProdutoEstoque = async (req: Request, res: Response) => {
     }
 
     // resolve categoria
-    let categoriaIdFinal: string | undefined = categoriaId;
+    let categoriaIdFinal: string | undefined = categoriaId ?? undefined;
     if (!categoriaIdFinal && (marca || tipo)) {
       const cat = await prisma.categoriaEstoque.upsert({
         where: {
@@ -220,8 +241,8 @@ export const salvarProdutoEstoque = async (req: Request, res: Response) => {
    ========================================================================== */
 export const atualizarProdutoEstoque = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const dados = req.body;
+    const { id } = req.params as { id: string };
+    const dados = (req.body || {}) as Partial<ProdutoEstoqueInput>;
     if (!id) return res.status(400).json({ erro: 'ID do produto não informado.' });
 
     const existe = await prisma.produtoEstoque.findUnique({ where: { id } });
@@ -242,17 +263,12 @@ export const atualizarProdutoEstoque = async (req: Request, res: Response) => {
       'estoqueId',
     ] as const;
 
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     for (const campo of camposPermitidos) {
       if (campo in dados) {
-        data[campo] = ((): any => {
-          const v = (dados as any)[campo];
-          // numéricos viram número quando aplicável
-          const n = Number(v);
-          if (typeof v === 'number') return v;
-          if (!Number.isNaN(n) && v !== '') return n;
-          return v;
-        })();
+        const v = (dados as any)[campo];
+        const n = Number(v);
+        data[campo] = typeof v === 'number' ? v : !Number.isNaN(n) && v !== '' ? n : v;
       }
     }
 
@@ -261,46 +277,56 @@ export const atualizarProdutoEstoque = async (req: Request, res: Response) => {
     const willTouchUnid = 'unidades_por_caixa' in data;
     const willTouchQtd = 'quantidade_em_estoque' in data;
 
-    const unidades = willTouchUnid ? min1Int(data.unidades_por_caixa, 1) : min1Int(existe.unidades_por_caixa, 1);
-    const caixas = willTouchCaixas ? toNonNegInt(data.caixas, existe.caixas ?? 0) : toNonNegInt(existe.caixas ?? 0, 0);
-    const qtd = willTouchQtd ? toNonNegInt(data.quantidade_em_estoque, existe.quantidade_em_estoque ?? 0) : toNonNegInt(existe.quantidade_em_estoque ?? 0, 0);
+    const unidades = willTouchUnid
+      ? min1Int(data['unidades_por_caixa'], 1)
+      : min1Int(existe.unidades_por_caixa, 1);
 
-    // Se mexeu em caixas ou unidades e não informou quantidade, derive quantidade
+    const caixas = willTouchCaixas
+      ? toNonNegInt(data['caixas'], existe.caixas ?? 0)
+      : toNonNegInt(existe.caixas ?? 0, 0);
+
+    const qtd = willTouchQtd
+      ? toNonNegInt(data['quantidade_em_estoque'], existe.quantidade_em_estoque ?? 0)
+      : toNonNegInt(existe.quantidade_em_estoque ?? 0, 0);
+
     if ((willTouchCaixas || willTouchUnid) && !willTouchQtd) {
-      data.quantidade_em_estoque = caixas * unidades;
-      data.unidades_por_caixa = unidades; // garante mínimo 1
+      data['quantidade_em_estoque'] = caixas * unidades;
+      data['unidades_por_caixa'] = unidades; // garante mínimo 1
     }
-    // Se mexeu em quantidade e não informou caixas, derive caixas
     if (willTouchQtd && !willTouchCaixas) {
-      data.caixas = Math.floor(qtd / unidades);
-      data.unidades_por_caixa = unidades; // garante mínimo 1
+      data['caixas'] = Math.floor(qtd / unidades);
+      data['unidades_por_caixa'] = unidades;
     }
-    // Se só mexeu em unidades (ex.: 5 -> 10), derive quantidade a partir das caixas atuais
     if (willTouchUnid && !willTouchCaixas && !willTouchQtd) {
-      data.quantidade_em_estoque = caixas * unidades;
+      data['quantidade_em_estoque'] = caixas * unidades;
     }
 
     /* -------------------------- reconciliação de preços -------------------------- */
     const willTouchPrecoCx = 'preco_venda_caixa' in data;
     const willTouchPrecoUn = 'preco_venda_unidade' in data;
-    const precoCx = willTouchPrecoCx ? coercePreco(data.preco_venda_caixa, 0) : coercePreco(existe.preco_venda_caixa, 0);
-    const precoUn = willTouchPrecoUn ? coercePreco(data.preco_venda_unidade, NaN) : coercePreco(existe.preco_venda_unidade, NaN);
+
+    const precoCx = willTouchPrecoCx
+      ? coercePreco(data['preco_venda_caixa'], 0)
+      : coercePreco(existe.preco_venda_caixa, 0);
+
+    const precoUn = willTouchPrecoUn
+      ? coercePreco(data['preco_venda_unidade'], NaN)
+      : coercePreco(existe.preco_venda_unidade, NaN);
 
     if (willTouchPrecoCx && !willTouchPrecoUn) {
-      data.preco_venda_unidade = unidades > 0 ? precoCx / unidades : 0;
+      data['preco_venda_unidade'] = unidades > 0 ? precoCx / unidades : 0;
     } else if (!willTouchPrecoCx && willTouchPrecoUn && !Number.isFinite(precoCx)) {
-      // Se veio apenas o unitário e não temos caixa confiável, derive o de caixa
-      data.preco_venda_caixa = precoUn * unidades;
+      data['preco_venda_caixa'] = precoUn * unidades;
     }
 
     // Se estoqueId mudou, herda nova filial
-    if (data.estoqueId && data.estoqueId !== existe.estoqueId) {
+    if (data['estoqueId'] && data['estoqueId'] !== existe.estoqueId) {
       const novoEstoque = await prisma.estoque.findUnique({
-        where: { id: String(data.estoqueId) },
+        where: { id: String(data['estoqueId']) },
         select: { filialId: true },
       });
       if (!novoEstoque) return res.status(404).json({ erro: 'Novo estoque não encontrado.' });
-      data.filialId = novoEstoque.filialId ?? null;
+      (data as any).filialId = novoEstoque.filialId ?? null;
     }
 
     const atual = await prisma.produtoEstoque.update({
@@ -323,7 +349,7 @@ export const atualizarProdutoEstoque = async (req: Request, res: Response) => {
    ========================================================================== */
 export const deletarProdutoEstoque = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     await prisma.produtoEstoque.delete({ where: { id } });
     res.status(200).json({ mensagem: 'Produto removido com sucesso' });
   } catch (error: any) {
@@ -341,7 +367,7 @@ export const deletarProdutoEstoque = async (req: Request, res: Response) => {
    Cada item deve conter ao menos: nome, codigo, categoriaId OU (marca+tipo).
    ========================================================================== */
 export const substituirProdutoEstoque = async (req: Request, res: Response) => {
-  const itens = req.body as any[];
+  const itens = (req.body || []) as ProdutoEstoqueInput[];
   try {
     const { estoqueId } = req.query as { estoqueId?: string };
 
@@ -349,7 +375,7 @@ export const substituirProdutoEstoque = async (req: Request, res: Response) => {
       where: estoqueId ? { estoqueId: String(estoqueId) } : undefined,
     });
 
-    const inseridos = [];
+    const inseridos: any[] = [];
     for (const item of itens) {
       if (!item.estoqueId && !estoqueId) {
         throw new Error('Cada item precisa de estoqueId, ou informe ?estoqueId na URL.');
@@ -364,7 +390,7 @@ export const substituirProdutoEstoque = async (req: Request, res: Response) => {
       if (!est.filialId) throw new Error(`Estoque ${estId} não está vinculado a nenhuma filial.`);
 
       // resolve categoria
-      let categoriaIdFinal: string | undefined = item.categoriaId;
+      let categoriaIdFinal: string | undefined = item.categoriaId ?? undefined;
       if (!categoriaIdFinal && (item.marca || item.tipo)) {
         const cat = await prisma.categoriaEstoque.upsert({
           where: {
@@ -491,7 +517,12 @@ export const listarCategorias = async (req: Request, res: Response) => {
    Requer filialId
    ========================================================================== */
 export const criarCategoria = async (req: Request, res: Response) => {
-  const { marca, categoria, tipo, filialId } = req.body || {};
+  const { marca, categoria, tipo, filialId } = (req.body || {}) as {
+    marca?: string | null;
+    categoria?: string | null;
+    tipo?: string | null;
+    filialId?: string | null;
+  };
   const marcaFinal = (marca ?? categoria ?? '').toString().trim();
   const tipoFinal = (tipo ?? '').toString().trim();
   const filialIdFinal = (filialId ?? '').toString().trim();

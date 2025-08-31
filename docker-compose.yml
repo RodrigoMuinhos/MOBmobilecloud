@@ -1,0 +1,74 @@
+
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mobsupply_db
+    environment:
+      POSTGRES_DB: mobsupply
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mobsupply"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    # Descomente para acessar o DB do host (DBeaver/Studio):
+    # ports:
+    #   - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.dockerfile
+    container_name: mobsupply_api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      # Host do Postgres é o serviço `db` (compose)
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/mobsupply?schema=public
+      # Permita origens que você usa em dev / LAN
+      CORS_ORIGIN: http://localhost:8080,http://localhost:5173,http://192.168.40.139:8080,http://192.168.40.139:5173
+      JWT_SECRET: change-me
+    volumes:
+      # Persistência dos uploads (avatars etc.)
+      - ./backend/uploads:/app/backend/uploads
+    # Exponha se quiser testar a API direto (sem NGINX)
+    # ports:
+    #   - "3333:3333"
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        node dist/server.js
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3333/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.dockerfile
+      args:
+        # O front chama /api e o NGINX repassa para api:3333
+        VITE_API_URL: /api
+    container_name: mobsupply_web
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+
+volumes:
+  db-data:
