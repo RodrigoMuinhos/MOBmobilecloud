@@ -133,6 +133,7 @@ alertSalvo: '✅ Cliente salvo com sucesso!',
     
 
    geral: {
+     buscar: 'Buscar...', 
     nenhumResultado: 'Nenhum resultado encontrado.',
       importar: 'Importar JSON',
   exportar: 'Exportar JSON',
@@ -152,6 +153,8 @@ alertSalvo: '✅ Cliente salvo com sucesso!',
 
 
 vendas: {
+
+  
     recibo: {
      gerarTxt: "Gerar .TXT",
     titulo: 'Recibo de Venda',
@@ -208,6 +211,10 @@ vendas: {
 
   verRecibo: 'Ver Recibo',
   finalizarVenda: 'Finalizar Venda',  
+    semDestino: 'Sem destino',
+  frete: 'Frete',
+  freteHint: 'Ex.: 12,50',
+  jurosInfo: 'Juros aproximados: {percent}%',
   
 },
 
@@ -721,6 +728,7 @@ alertSalvo: '✅ Client saved successfully!',
     },
 
     geral: {
+       buscar: 'search...', 
        nenhumResultado: 'No results found.',
         importar: 'Import JSON',
   exportar: 'Export JSON',
@@ -798,6 +806,10 @@ alertSalvo: '✅ Client saved successfully!',
       totalFinal: 'Final Total',
       verRecibo: 'View Receipt',
       finalizarVenda: 'Finish Sale',
+semDestino: 'No allocation',
+frete: 'Shipping',
+freteHint: 'e.g., 12.50',
+jurosInfo: 'Approx. interest: {percent}%',
 
     },
 

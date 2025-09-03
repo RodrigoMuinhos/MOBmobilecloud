@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { VendaAPI, ItemCarrinhoAPI } from '../../../types/api/vendaApi.types';
 import { useTheme } from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -9,27 +9,26 @@ interface Props {
   vendas: VendaAPI[];
 }
 
+const isPago = (s: VendaAPI['status_pagamento'] | string | undefined) =>
+  String(s ?? '').toLowerCase() === 'pago';
+
+const fmtBRL = (v: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+    Number.isFinite(v) ? v : 0
+  );
+
 const CardResumoFinanceiroValores: React.FC<Props> = ({ vendas }) => {
   const { temaAtual } = useTheme();
   const { currentLang } = useLanguage();
   const t = textos[currentLang].relatorio;
 
-  const [valorTotal, setValorTotal] = useState(0);
-  const [valorPago, setValorPago] = useState(0);
-  const [valorAberto, setValorAberto] = useState(0);
-  const [descontos, setDescontos] = useState(0);
-
-  useEffect(() => {
-    calcularTotais(vendas);
-  }, [vendas]);
-
-  const calcularTotais = (vendas: VendaAPI[]) => {
+  const { valorTotal, valorPago, valorAberto, descontos } = useMemo(() => {
     let total = 0;
     let pago = 0;
     let aberto = 0;
-    let desconto = 0;
+    let descAcum = 0;
 
-    vendas.forEach((venda) => {
+    for (const venda of vendas) {
       const carrinho: ItemCarrinhoAPI[] = Array.isArray(venda.carrinho) ? venda.carrinho : [];
 
       const subtotal = carrinho.reduce((acc, item) => {
@@ -45,23 +44,24 @@ const CardResumoFinanceiroValores: React.FC<Props> = ({ vendas }) => {
       const valorFinal = subtotal - desc + frete + acrescimo;
 
       total += valorFinal;
-      desconto += desc;
+      descAcum += desc;
 
-      if (venda.status_pagamento === 'pago') {
-        pago += valorFinal;
-      } else {
-        aberto += valorFinal;
-      }
-    });
+      if (isPago(venda.status_pagamento)) pago += valorFinal;
+      else aberto += valorFinal;
+    }
 
-    setValorTotal(total);
-    setValorPago(pago);
-    setValorAberto(aberto);
-    setDescontos(desconto);
+    return {
+      valorTotal: total,
+      valorPago: pago,
+      valorAberto: aberto,
+      descontos: descAcum,
+    };
+  }, [vendas]);
+
+  const formatar = (valor: number, { showMinus = false } = {}) => {
+    const txt = fmtBRL(Math.max(0, valor));
+    return showMinus && valor > 0 ? `-${txt}` : txt;
   };
-
-  const formatar = (valor: number, prefix = '') =>
-    `${prefix}R$ ${valor.toFixed(2)}`.replace('.', ',');
 
   return (
     <div
@@ -75,12 +75,16 @@ const CardResumoFinanceiroValores: React.FC<Props> = ({ vendas }) => {
 
       <div className="rounded shadow p-4" style={{ backgroundColor: temaAtual.card }}>
         <p className="text-sm font-medium">{t.valorAberto}</p>
-        <p className="text-lg font-bold text-red-500">{formatar(valorAberto, '-')}</p>
+        <p className="text-lg font-bold text-red-500">
+          {formatar(valorAberto, { showMinus: true })}
+        </p>
       </div>
 
       <div className="rounded shadow p-4" style={{ backgroundColor: temaAtual.card }}>
         <p className="text-sm font-medium">{t.descontosDados}</p>
-        <p className="text-lg font-bold text-blue-500">{formatar(descontos, '-')}</p>
+        <p className="text-lg font-bold text-blue-500">
+          {formatar(descontos, { showMinus: true })}
+        </p>
       </div>
 
       <div className="rounded shadow p-4 border-t" style={{ backgroundColor: temaAtual.card }}>

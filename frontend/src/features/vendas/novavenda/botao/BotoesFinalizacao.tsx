@@ -41,8 +41,8 @@ const BotoesFinalizacao: React.FC<Props> = ({
           isEnviandoVenda ? 'opacity-60 cursor-not-allowed' : 'hover:scale-105'
         }`}
         style={{
-          backgroundColor: temaAtual.sucesso,
-          color: temaAtual.textoBranco,
+          backgroundColor: temaAtual.botao,
+          color: temaAtual.botaoTexto,
         }}
         title={t.finalizarVenda}
       >
@@ -58,8 +58,9 @@ const BotoesFinalizacao: React.FC<Props> = ({
         onClick={onGerarRecibo}
         className="w-10 h-10 flex items-center justify-center rounded-full shadow-md transition duration-200 hover:scale-105"
         style={{
-          backgroundColor: temaAtual.botaoSecundario ?? temaAtual.card,
-          color: temaAtual.textoBranco,
+          backgroundColor: temaAtual.card,
+          color: temaAtual.texto,
+          border: `1px solid ${temaAtual.contraste}`,
         }}
         title={t.gerarRecibo ?? 'Gerar Recibo'}
       >

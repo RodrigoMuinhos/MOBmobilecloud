@@ -1,5 +1,3 @@
-
-
 services:
   db:
     image: postgres:16-alpine
@@ -16,7 +14,7 @@ services:
       timeout: 5s
       retries: 20
     restart: unless-stopped
-    # Descomente para acessar o DB do host (DBeaver/Studio):
+    # Se quiser acessar do host (DBeaver), descomente:
     # ports:
     #   - "5432:5432"
 
@@ -31,17 +29,21 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3333
-      # Host do Postgres é o serviço `db` (compose)
+      # Postgres dentro da rede do compose
       DATABASE_URL: postgresql://postgres:postgres@db:5432/mobsupply?schema=public
-      # Permita origens que você usa em dev / LAN
-      CORS_ORIGIN: http://localhost:8080,http://localhost:5173,http://192.168.40.139:8080,http://192.168.40.139:5173
-      JWT_SECRET: change-me
+      # Libera Vite 5173/5174 no host e no IP da sua LAN
+      CORS_ORIGIN: >
+        http://localhost:5173,
+        http://localhost:5174,
+        http://localhost:8080,
+        http://192.168.40.139:5173,
+        http://192.168.40.139:5174,
+        http://192.168.40.139:8080
+      JWT_SECRET: rodrigo123
     volumes:
-      # Persistência dos uploads (avatars etc.)
       - ./backend/uploads:/app/backend/uploads
-    # Exponha se quiser testar a API direto (sem NGINX)
-    # ports:
-    #   - "3333:3333"
+    ports:
+      - "3333:3333"     # <— API acessível no host
     command: >
       sh -c "
         npx prisma migrate deploy &&
@@ -54,21 +56,19 @@ services:
       retries: 12
     restart: unless-stopped
 
-  web:
-    build:
-      context: .
-      dockerfile: docker/web.dockerfile
-      args:
-        # O front chama /api e o NGINX repassa para api:3333
-        VITE_API_URL: /api
-    container_name: mobsupply_web
-    depends_on:
-      api:
-        condition: service_healthy
-    ports:
-      - "8080:80"
-    restart: unless-stopped
-
+  # web:  # (não usado na Opção 1 — front roda com Vite local)
+  #   build:
+  #     context: .
+  #     dockerfile: docker/web.dockerfile
+  #     args:
+  #       VITE_API_URL: /api
+  #   container_name: mobsupply_web
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   ports:
+  #     - "8080:80"    # só deixe isso se quiser testar o build do front via Nginx
+  #   restart: unless-stopped
 
 volumes:
   db-data:

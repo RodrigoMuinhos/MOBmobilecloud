@@ -2,30 +2,34 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { BsCircleFill } from 'react-icons/bs';
-import { Cliente } from '../../../../types/domain/cliente.types';
 import { useTheme } from '../../../../context/ThemeContext';
 import { useLanguage } from '../../../../context/LanguageContext';
-import { Venda } from '../../../../types/domain/venda.types';
 
-type ClienteResumo = Cliente & {
+// ✅ Use os tipos da API, não do domínio antigo
+import { ClienteAPI } from '../../../../types/api/clienteApi.types';
+import { VendaAPI } from '../../../../types/api/vendaApi.types';
+
+export type ClienteResumoAPI = ClienteAPI & {
   totalGasto: number;
   numeroCompras: number;
-  ultimaCompra: string;
+  ultimaCompra: string; // ISO
 };
 
+type CorPermitida = 'cinza' | 'azul' | 'amarelo' | 'verde' | 'roxo';
+
 interface Props {
-  clientes: ClienteResumo[];
-  statusMap: Record<string, string>;
+  clientes: ClienteResumoAPI[];
+  statusMap: Record<string, string>; // pode vir qualquer string do backend; sanitizamos abaixo
   mensagensPorCor: Record<string, string>;
   filtro: string;
-  vendas: Venda[];
-  onStatusClick: (cpf: string, novaCor: string) => void;
+  vendas: VendaAPI[]; // mantido por compatibilidade (mesmo que não use aqui)
+  onStatusClick: (cpf: string, novaCor: CorPermitida) => void;
   onAbrirModal: (dados: { cpf: string; numero: string }) => void;
-  onAbrirAnalise: (cliente: Cliente) => void;
+  onAbrirAnalise: (cliente: ClienteAPI) => void;
 }
 
-const cores = ['cinza', 'azul', 'amarelo', 'verde', 'roxo'] as const;
-const classesCor: Record<string, string> = {
+const cores: CorPermitida[] = ['cinza', 'azul', 'amarelo', 'verde', 'roxo'];
+const classesCor: Record<CorPermitida, string> = {
   cinza: '#9ca3af',
   azul: '#3b82f6',
   amarelo: '#eab308',
@@ -33,20 +37,31 @@ const classesCor: Record<string, string> = {
   roxo: '#a855f7',
 };
 
-const formatarCPF = (cpf: string) =>
-  cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+// --- helpers
+const mapCor = (cor?: string): CorPermitida =>
+  (cores.includes(cor as CorPermitida) ? (cor as CorPermitida) : 'cinza');
 
-const calcularDiasDesde = (dataISO: string) => {
+const proximaCor = (corAtual?: string): CorPermitida => {
+  const atual = mapCor(corAtual);
+  const idx = cores.indexOf(atual);
+  return cores[(idx + 1) % cores.length];
+};
+
+const cpfLimpo = (cpf?: string | null) => (cpf || '').replace(/\D/g, '');
+const nomeSeguro = (nome?: string | null) => (nome || '').trim();
+
+const formatarCPF = (cpf: string) =>
+  cpf.length === 11 ? cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4') : cpf;
+
+const calcularDiasDesde = (dataISO?: string | null) => {
   if (!dataISO) return 0;
   const hoje = new Date();
   const data = new Date(dataISO);
   return Math.floor((+hoje - +data) / (1000 * 60 * 60 * 24));
 };
 
-const proximaCor = (corAtual: string): string => {
-  const idx = cores.indexOf(corAtual as any);
-  return cores[(idx + 1) % cores.length];
-};
+const formatarBRL = (v: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
 const TabelaClientesPF: React.FC<Props> = ({
   clientes,
@@ -61,11 +76,14 @@ const TabelaClientesPF: React.FC<Props> = ({
   const { textos, currentLang } = useLanguage();
   const idioma = textos[currentLang];
 
-  const clientesFiltrados = clientes.filter(
-    (c) =>
-      c.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-      c.cpf.includes(filtro)
-  );
+  const filtroNome = filtro.toLowerCase();
+  const filtroCpf = filtro.replace(/\D/g, '');
+
+  const clientesFiltrados = clientes.filter((c) => {
+    const nome = nomeSeguro(c.nome).toLowerCase();
+    const cpf = cpfLimpo(c.cpf);
+    return nome.includes(filtroNome) || cpf.includes(filtroCpf);
+  });
 
   return (
     <div
@@ -86,7 +104,8 @@ const TabelaClientesPF: React.FC<Props> = ({
         </thead>
         <tbody>
           {clientesFiltrados.map((cliente, i) => {
-            const cor = statusMap[cliente.cpf] || 'cinza';
+            const cpf = cpfLimpo(cliente.cpf);
+            const cor = mapCor(statusMap[cpf]); // ✅ sanitiza
             const dias = calcularDiasDesde(cliente.ultimaCompra);
 
             const rotuloStatus =
@@ -96,11 +115,12 @@ const TabelaClientesPF: React.FC<Props> = ({
                 ? idioma.vendas?.semCompra
                 : idioma.vendas?.clienteAtivo;
 
-            const mensagemWpp = mensagensPorCor[cor] || idioma.mensagens?.mensagemPadrao || '';
+            const mensagemWpp =
+              mensagensPorCor[cor] || idioma.mensagens?.mensagemPadrao || '';
 
             return (
               <tr
-                key={i}
+                key={cliente.id ?? cpf ?? String(i)}
                 style={{
                   borderBottom: `1px solid ${temaAtual.contraste}`,
                   background: 'transparent',
@@ -108,7 +128,7 @@ const TabelaClientesPF: React.FC<Props> = ({
                 className="hover:brightness-110 transition"
               >
                 <td className="p-2">
-                  <button onClick={() => onStatusClick(cliente.cpf, proximaCor(cor))}>
+                  <button onClick={() => onStatusClick(cpf, proximaCor(cor))}>
                     <BsCircleFill style={{ color: classesCor[cor] }} />
                   </button>
                 </td>
@@ -118,10 +138,10 @@ const TabelaClientesPF: React.FC<Props> = ({
                   className="p-2 cursor-pointer underline"
                   style={{ color: temaAtual.destaque }}
                 >
-                  {cliente.nome}
+                  {nomeSeguro(cliente.nome)}
                 </td>
 
-                <td className="p-2">{formatarCPF(cliente.cpf)}</td>
+                <td className="p-2">{formatarCPF(cpf)}</td>
 
                 <td className="p-2">
                   <div className="flex flex-col">
@@ -136,15 +156,15 @@ const TabelaClientesPF: React.FC<Props> = ({
 
                 <td className="p-2">{cliente.numeroCompras}</td>
 
-                <td className="p-2">R$ {cliente.totalGasto.toFixed(2)}</td>
+                <td className="p-2">{formatarBRL(cliente.totalGasto)}</td>
 
                 <td className="p-2">
                   <button
                     title={mensagemWpp}
                     onClick={() =>
                       onAbrirModal({
-                        cpf: cliente.cpf,
-                        numero: cliente.whatsapp,
+                        cpf,
+                        numero: (cliente.whatsapp || '').replace(/\D/g, ''),
                       })
                     }
                     style={{ color: '#22c55e' }}

@@ -1,3 +1,4 @@
+// src/features/vendas/historico/components/MensagemPadraoBoxPF.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { BsCircleFill } from 'react-icons/bs';
@@ -34,11 +35,11 @@ const MensagemPadraoBoxPF: React.FC = () => {
   useEffect(() => {
     const banco = carregarBanco();
     const salvas = banco.clientes?.modelosFixosWppPF || {};
-    const atualizadas: Record<Cor, string> = { ...mensagens };
-    cores.forEach((cor) => {
-      if (salvas[cor]) atualizadas[cor] = salvas[cor];
+    setMensagens((prev) => {
+      const novo = { ...prev };
+      cores.forEach((c) => { if (salvas[c]) novo[c] = salvas[c]; });
+      return novo;
     });
-    setMensagens(atualizadas);
   }, []);
 
   const salvar = () => {
@@ -48,7 +49,11 @@ const MensagemPadraoBoxPF: React.FC = () => {
       modelosFixosWppPF: mensagens,
     };
     salvarBanco(banco);
-    alert(idioma.estoque.salvoSucesso || '✅ Mensagem salva com sucesso!');
+
+    // 🔔 avisa o restante da app (Histórico) para atualizar imediatamente
+    window.dispatchEvent(new CustomEvent('wpp:modelosPF:salvos', { detail: mensagens }));
+
+    alert((idioma?.estoque?.salvoSucesso as string) || '✅ Mensagens salvas!');
   };
 
   return (
@@ -61,54 +66,44 @@ const MensagemPadraoBoxPF: React.FC = () => {
       }}
     >
       <h3 className="font-semibold mb-3 text-lg">
-        {idioma.mensagens.titulo}
+        {(idioma?.mensagens?.titulo as string) || 'Mensagens padrão por status'}
       </h3>
 
-      {/* Seletor de status (círculos coloridos) */}
       <div className="flex items-center gap-4 mb-4">
         {cores.map((cor) => (
           <div key={cor} className="flex flex-col items-center gap-1">
             <BsCircleFill
               size={22}
-              className={`cursor-pointer transition-transform ${
-                corSelecionada === cor ? 'scale-125' : ''
-              }`}
+              className={`cursor-pointer transition-transform ${corSelecionada === cor ? 'scale-125' : ''}`}
               style={{ color: corToHex[cor] }}
               onClick={() => setCorSelecionada(cor)}
-              title={idioma.mensagens[cor] || cor}
+              title={(idioma?.mensagens?.[cor] as string) || cor}
             />
             <span className="text-xs" style={{ color: temaAtual.texto }}>{cor.toUpperCase()}</span>
           </div>
         ))}
       </div>
 
-      {/* Área de edição da mensagem */}
       <textarea
         value={mensagens[corSelecionada]}
-        onChange={(e) =>
-          setMensagens({ ...mensagens, [corSelecionada]: e.target.value })
-        }
+        onChange={(e) => setMensagens({ ...mensagens, [corSelecionada]: e.target.value })}
         className="w-full p-3 rounded text-sm mb-4"
         style={{
           background: temaAtual.input,
           color: temaAtual.texto,
           border: `1px solid ${temaAtual.contraste}`,
         }}
-        placeholder={idioma.mensagens.placeholder}
+        placeholder={(idioma?.mensagens?.placeholder as string) || 'Escreva a mensagem para salvar na cor selecionada...'}
         rows={5}
       />
 
-      {/* Botão de salvar */}
       <button
         onClick={salvar}
         className="px-4 py-2 rounded flex items-center gap-2 transition-all"
-        style={{
-          background: temaAtual.destaque,
-          color: temaAtual.textoClaro,
-        }}
+        style={{ background: temaAtual.destaque, color: temaAtual.textoClaro }}
       >
         <FaSave />
-        {idioma.mensagens.botaoSalvar}
+        {(idioma?.mensagens?.botaoSalvar as string) || 'Salvar'}
       </button>
     </div>
   );

@@ -1,35 +1,40 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { FaTrash, FaEdit, FaIdBadge, FaTh, FaThList } from 'react-icons/fa';
 import { useTheme } from '../../../context/ThemeContext';
 import CadastroGoogleStyle from '../components/CadastroGoogleStyle';
+import CardUsuario from '../components/CardUsuario';
 import api from '../../../services/api';
 import type { Usuario } from '../../../types/usuario/usuarioTypes';
+import { resolveAvatar } from '../../../utils/avatar';
 
+/* ----------------------------- Helpers ----------------------------- */
 // ---------- Helpers ----------
-const PLACEHOLDER = '/user-placeholder.png';
 const limparNaoDigitos = (v: string) => (v || '').replace(/\D/g, '');
 
-const isTipoUsuario = (v: any): v is Usuario['tipo'] =>
-  v === 'adm' || v === 'filiado' || v === 'vendedor';
+const TIPOS = ['adm', 'filiado', 'vendedor'] as const;
+type TipoOk = (typeof TIPOS)[number];
+
+const ehTipoOk = (v: any): v is TipoOk =>
+  TIPOS.includes(String(v).toLowerCase() as TipoOk);
 
 const normalizarParaApi = (u: Usuario): Usuario => ({
   ...u,
   cpf: limparNaoDigitos(u.cpf),
+  // garanta minúsculas conforme o schema/DB
+  tipo: String(u.tipo || '').toLowerCase() as TipoOk,
 });
 
-// Garante uma URL segura pro <img>
-const safeAvatar = (v?: string | null) => {
-  if (typeof v !== 'string') return PLACEHOLDER;
-  const s = v.trim();
-  if (!s) return PLACEHOLDER;
-  if (/^https?:\/\//i.test(s) || s.startsWith('data:image')) return s;
-  // Caso o backend grave apenas "avatars/arquivo.png", exponha /uploads no server
-  // e monte abaixo a URL pública se preferir:
-  // const base = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/api\/?$/, '');
-  // return `${base}/${s.replace(/^\/+/, '')}`;
-  return s;
+const getErroBackend = (e: any) => {
+  const status = e?.response?.status;
+  const data = e?.response?.data || {};
+  const msg = data?.erro || data?.message || e?.message || 'Erro inesperado';
+  const det = data?.detalhe || data?.code;
+  return status ? `(${status}) ${msg}${det ? ' — ' + det : ''}` : msg;
 };
 
+
+/* ------------------------------ Página ----------------------------- */
 const UsuariosPage: React.FC = () => {
   const { temaAtual } = useTheme();
 
@@ -40,65 +45,137 @@ const UsuariosPage: React.FC = () => {
   const [visualModoCard, setVisualModoCard] = useState(true);
 
   const [carregando, setCarregando] = useState(false);
+  const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // ---------- Carregar lista ----------
+  /* ------------------------- Carregar lista ------------------------- */
   const carregarUsuarios = async () => {
     setCarregando(true);
     setErro(null);
     try {
       const res = await api.get('/usuarios');
-      const lista: Usuario[] = (res.data || []).map((u: any) => ({
-        id: u.id,
-        nome: u.nome ?? '',
-        cpf: String(u.cpf ?? ''),
-        senha: '', // nunca vem do backend
-        tipo: isTipoUsuario(u.tipo) ? u.tipo : 'vendedor',
-        email: u.email ?? undefined,
-        cidade: u.cidade ?? undefined,
-        nascimento: u.nascimento ?? undefined,
-        whatsapp: u.whatsapp ?? undefined,
-        avatar: u.avatar ?? null,
-      }));
+
+      const lista: Usuario[] = (res.data || []).map((u: any) => {
+        const tipoNorm = String(u?.tipo ?? '')
+          .toLowerCase() as TipoOk;
+        return {
+          id: u.id,
+          nome: u.nome ?? '',
+          cpf: String(u.cpf ?? ''),
+          senha: '', // nunca vem do backend
+          tipo: ehTipoOk(tipoNorm) ? tipoNorm : 'vendedor',
+          filialId: u.filialId ?? null,
+          email: u.email ?? undefined,
+          cidade: u.cidade ?? undefined,
+          nascimento: u.nascimento ?? undefined,
+          whatsapp: u.whatsapp ?? undefined,
+          avatar: u.avatar ?? null,
+        };
+      });
+
+      if ((import.meta as any)?.env?.DEV) {
+        console.table(
+          lista.map((u) => ({
+            nome: u.nome,
+            tipo: u.tipo,
+            avatar_api: u.avatar,
+            avatar_resolvido: resolveAvatar(u.avatar),
+          }))
+        );
+      }
+
       setUsuarios(lista);
     } catch (e) {
       console.error('Erro ao carregar usuários:', e);
-      setErro('Não foi possível carregar os usuários.');
+      setErro(getErroBackend(e) || 'Não foi possível carregar os usuários.');
     } finally {
       setCarregando(false);
     }
   };
 
-  // ---------- Criar/Editar + Upload do avatar ----------
+  /* ----------------- Criar/Editar + Upload de avatar ---------------- */
   const salvarUsuario = async (usuario: Usuario, avatarFile?: File | null) => {
     setErro(null);
+    setSalvando(true);
     const payload = normalizarParaApi(usuario);
 
     try {
       if (usuarioEditando?.cpf) {
-        // Atualiza dados
+        // ---------- PUT (edição)
         const cpfChave = limparNaoDigitos(usuarioEditando.cpf);
-        await api.put(`/usuarios/${cpfChave}`, payload);
 
-        // Se tiver avatar novo, faz upload
+        const {
+          senha,
+          cpf: _cpfIgnorar,
+          id: _idIgnorar,
+          avatar: _avatarIgnorar,
+          ...rest
+        } = payload;
+
+        const bodyPut: any = { ...rest };
+        if (senha && senha.trim()) bodyPut.senha = senha;
+
+        if ((import.meta as any)?.env?.DEV) {
+          console.log('PUT /usuarios payload:', bodyPut);
+        }
+
+        await api.put(`/usuarios/${cpfChave}`, bodyPut);
+
         if (avatarFile) {
-          const fd = new FormData();
-          fd.append('avatar', avatarFile);
-          await api.post(`/usuarios/${cpfChave}/avatar`, fd, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          });
+          try {
+            const fd = new FormData();
+            fd.append('avatar', avatarFile);
+            const up = await api.post(`/usuarios/${cpfChave}/avatar`, fd, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            const novoAvatar: string | undefined = up?.data?.avatar;
+            if (novoAvatar) {
+              setUsuarios((prev) =>
+                prev.map((u) =>
+                  limparNaoDigitos(u.cpf) === cpfChave ? { ...u, avatar: novoAvatar } : u
+                )
+              );
+            }
+          } catch (e) {
+            console.error('Erro no upload de avatar:', e);
+            setErro(getErroBackend(e) || 'Erro ao enviar o avatar.');
+          }
         }
       } else {
-        // Cria usuário
-        await api.post('/usuarios', payload);
+        // ---------- POST (criação)
+        if (!payload.senha || !payload.senha.trim()) {
+          setErro('A senha é obrigatória para criar um novo usuário.');
+          setSalvando(false);
+          return;
+        }
 
-        // Upload do avatar usando o CPF recém-criado
+        const { avatar: _avatarIgnorar, ...bodyPost } = payload;
+
+        if ((import.meta as any)?.env?.DEV) {
+          console.log('POST /usuarios payload:', bodyPost);
+        }
+
+        await api.post('/usuarios', bodyPost);
+
         if (avatarFile) {
-          const fd = new FormData();
-          fd.append('avatar', avatarFile);
-          await api.post(`/usuarios/${payload.cpf}/avatar`, fd, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          });
+          try {
+            const fd = new FormData();
+            fd.append('avatar', avatarFile);
+            const up = await api.post(`/usuarios/${bodyPost.cpf}/avatar`, fd, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            const novoAvatar: string | undefined = up?.data?.avatar;
+            if (novoAvatar) {
+              setUsuarios((prev) =>
+                prev.map((u) =>
+                  limparNaoDigitos(u.cpf) === bodyPost.cpf ? { ...u, avatar: novoAvatar } : u
+                )
+              );
+            }
+          } catch (e) {
+            console.error('Erro no upload de avatar (novo):', e);
+            setErro(getErroBackend(e) || 'Erro ao enviar o avatar.');
+          }
         }
       }
 
@@ -107,11 +184,13 @@ const UsuariosPage: React.FC = () => {
       setUsuarioEditando(null);
     } catch (e) {
       console.error('Erro ao salvar usuário:', e);
-      setErro('Erro ao salvar. Verifique os dados e tente novamente.');
+      setErro(getErroBackend(e) || 'Erro ao salvar. Verifique os dados e tente novamente.');
+    } finally {
+      setSalvando(false);
     }
   };
 
-  // ---------- Remover ----------
+  /* ---------------------------- Remover ---------------------------- */
   const remover = async (cpf?: string) => {
     if (!cpf) return;
     if (!window.confirm('Remover este usuário?')) return;
@@ -122,13 +201,29 @@ const UsuariosPage: React.FC = () => {
       await carregarUsuarios();
     } catch (e) {
       console.error('Erro ao remover usuário:', e);
-      setErro('Erro ao remover usuário.');
+      setErro(getErroBackend(e) || 'Erro ao remover usuário.');
     }
   };
 
-  // ---------- Callbacks ----------
+  /* ---------------------------- Callbacks --------------------------- */
   const handleSubmitForm = (usuario: Usuario, avatarFile?: File | null) => {
-    salvarUsuario(usuario, avatarFile);
+    if (salvando) return;
+
+    if (!usuario.nome?.trim()) return setErro('Informe o nome.');
+
+    const cpfLimpo = limparNaoDigitos(usuario.cpf);
+    if (!cpfLimpo || cpfLimpo.length !== 11)
+      return setErro('CPF inválido. Use 11 dígitos.');
+
+    const tipoMin = String(usuario.tipo || '').toLowerCase();
+    if (!ehTipoOk(tipoMin))
+      return setErro('Tipo inválido. Use: adm, filiado ou vendedor.');
+
+    if (!usuarioEditando?.cpf && !usuario.senha?.trim()) {
+      return setErro('A senha é obrigatória para criar um novo usuário.');
+    }
+
+    salvarUsuario({ ...usuario, cpf: cpfLimpo, tipo: tipoMin as TipoOk }, avatarFile);
   };
 
   const editar = (usuario: Usuario) => {
@@ -138,16 +233,24 @@ const UsuariosPage: React.FC = () => {
 
   useEffect(() => {
     carregarUsuarios();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---------- UI ----------
+  /* ------------------------------- UI ------------------------------ */
   return (
-    <div className="p-6 min-h-screen" style={{ background: temaAtual.fundo, color: temaAtual.texto }}>
+    <div
+      className="p-6 min-h-screen"
+      style={{ background: temaAtual.fundo, color: temaAtual.texto }}
+    >
       {modoCadastro ? (
         <CadastroGoogleStyle
           onSubmit={handleSubmitForm}
-          onCancel={() => { setModoCadastro(false); setUsuarioEditando(null); }}
+          onCancel={() => {
+            setModoCadastro(false);
+            setUsuarioEditando(null);
+          }}
           usuarioEditando={usuarioEditando}
+          salvando={salvando}
         />
       ) : (
         <>
@@ -166,8 +269,9 @@ const UsuariosPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setModoCadastro(true)}
-                className="px-4 py-2 rounded font-semibold text-sm"
+                className="px-4 py-2 rounded font-semibold text-sm disabled:opacity-60"
                 style={{ background: temaAtual.destaque, color: temaAtual.textoBranco }}
+                disabled={salvando || carregando}
               >
                 + Novo Usuário
               </button>
@@ -175,7 +279,10 @@ const UsuariosPage: React.FC = () => {
           </div>
 
           {erro && (
-            <div className="mb-4 text-sm rounded px-3 py-2" style={{ background: '#7f1d1d', color: '#fff' }}>
+            <div
+              className="mb-4 text-sm rounded px-3 py-2"
+              style={{ background: '#7f1d1d', color: '#fff' }}
+            >
               {erro}
             </div>
           )}
@@ -185,34 +292,17 @@ const UsuariosPage: React.FC = () => {
           ) : visualModoCard ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {usuarios.map((u) => (
-                <div
+                <CardUsuario
                   key={u.id || u.cpf}
-                  className="rounded-lg shadow-md p-4 flex items-center gap-4"
-                  style={{ background: temaAtual.card, color: temaAtual.texto }}
-                >
-                  <img
-                    src={safeAvatar(u.avatar)}
-                    alt={u.nome}
-                    className="w-16 h-16 rounded-full object-cover border"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).onerror = null;
-                      (e.currentTarget as HTMLImageElement).src = PLACEHOLDER;
-                    }}
-                  />
-                  <div className="flex-1">
-                    <h2 className="font-bold text-lg">{u.nome}</h2>
-                    <p className="text-sm opacity-80">{u.cpf}</p>
-                    <span className="text-xs capitalize opacity-70">{u.tipo}</span>
-                  </div>
-                  <div className="flex flex-col gap-2 items-end">
-                    <button onClick={() => editar(u)} className="text-blue-500 hover:scale-110 transition">
-                      <FaEdit />
-                    </button>
-                    <button onClick={() => remover(u.cpf)} className="text-red-600 hover:scale-110 transition">
-                      <FaTrash />
-                    </button>
-                  </div>
-                </div>
+                  usuario={{
+                    nome: u.nome,
+                    email: u.email ?? '',
+                    tipo: u.tipo,
+                    avatar: u.avatar ?? null,
+                  }}
+                  onEditar={() => editar(u)}
+                  onRemover={() => remover(u.cpf)}
+                />
               ))}
               {usuarios.length === 0 && (
                 <div className="col-span-full text-center opacity-70 py-6">
@@ -233,16 +323,29 @@ const UsuariosPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {usuarios.map((u) => (
-                    <tr key={u.id || u.cpf} style={{ background: temaAtual.card, color: temaAtual.texto }}>
+                    <tr
+                      key={u.id || u.cpf}
+                      style={{ background: temaAtual.card, color: temaAtual.texto }}
+                    >
                       <td className="border px-3 py-2">{u.nome}</td>
                       <td className="border px-3 py-2">{u.cpf}</td>
-                      <td className="border px-2 py-2 text-center capitalize">{u.tipo}</td>
+                      <td className="border px-2 py-2 text-center">
+                        {u.tipo}
+                      </td>
                       <td className="border px-2 py-2">
                         <div className="flex justify-center gap-2">
-                          <button onClick={() => remover(u.cpf)} className="hover:scale-110 transition text-red-600 text-sm">
+                          <button
+                            onClick={() => remover(u.cpf)}
+                            className="hover:scale-110 transition text-red-600 text-sm"
+                            title="Remover"
+                          >
                             <FaTrash />
                           </button>
-                          <button onClick={() => editar(u)} className="hover:scale-110 transition text-blue-500 text-sm">
+                          <button
+                            onClick={() => editar(u)}
+                            className="hover:scale-110 transition text-blue-500 text-sm"
+                            title="Editar"
+                          >
                             <FaEdit />
                           </button>
                         </div>

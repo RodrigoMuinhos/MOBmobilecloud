@@ -6,12 +6,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 import { textos } from '../../../i18n/textos';
 import { VendaAPI, ItemCarrinhoAPI } from '../../../types/api/vendaApi.types';
 
-import {
-  FaMoneyBillWave,
-  FaHourglassHalf,
-  FaTag,
-  FaCalculator,
-} from 'react-icons/fa';
+import { FaMoneyBillWave, FaHourglassHalf, FaTag, FaCalculator } from 'react-icons/fa';
 
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
@@ -30,10 +25,16 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 const formatarMoeda = (valor: number): string =>
   valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+const isPago = (s: VendaAPI['status_pagamento'] | string | undefined) =>
+  String(s ?? '').toLowerCase() === 'pago';
+
 const calcularResumoFinanceiro = (vendas: VendaAPI[]) => {
   const modelos: Record<string, number> = {};
   const marcas: Record<string, number> = {};
-  let total = 0, pago = 0, aberto = 0, desconto = 0;
+  let total = 0,
+    pago = 0,
+    aberto = 0,
+    desconto = 0;
 
   vendas.forEach((venda) => {
     const carrinho: ItemCarrinhoAPI[] = Array.isArray(venda.carrinho) ? venda.carrinho : [];
@@ -42,13 +43,8 @@ const calcularResumoFinanceiro = (vendas: VendaAPI[]) => {
       const marca = item.nome?.split(' / ')[0] || '';
       const modelo = item.nome?.trim().split(' ').pop() || '';
 
-      if (marca) {
-        marcas[marca] = (marcas[marca] || 0) + (item.quantidade || 0);
-      }
-
-      if (modelo) {
-        modelos[modelo] = (modelos[modelo] || 0) + (item.quantidade || 0);
-      }
+      if (marca) marcas[marca] = (marcas[marca] || 0) + (item.quantidade || 0);
+      if (modelo) modelos[modelo] = (modelos[modelo] || 0) + (item.quantidade || 0);
     });
 
     const subtotal = carrinho.reduce((acc, item) => {
@@ -66,7 +62,7 @@ const calcularResumoFinanceiro = (vendas: VendaAPI[]) => {
     total += valorFinal;
     desconto += desc;
 
-    if (venda.status_pagamento === 'pago') {
+    if (isPago(venda.status_pagamento)) {
       pago += valorFinal;
     } else {
       aberto += valorFinal;
@@ -117,9 +113,7 @@ const GraficoResumoFinanceiro: React.FC<Props> = ({ vendas }) => {
         {
           label: 'Qtd',
           data: entradas.map(([_, qtd]) => qtd),
-          backgroundColor: entradas.map(([_, qtd]) =>
-            qtd === max ? corPrincipal : corAlternativa
-          ),
+          backgroundColor: entradas.map(([_, qtd]) => (qtd === max ? corPrincipal : corAlternativa)),
         },
       ],
     };
@@ -146,6 +140,9 @@ const GraficoResumoFinanceiro: React.FC<Props> = ({ vendas }) => {
     maintainAspectRatio: false,
     scales: { y: { beginAtZero: true } },
   };
+
+  const descontoFmt =
+    valorDesconto > 0 ? `- ${formatarMoeda(valorDesconto)}` : formatarMoeda(0);
 
   return (
     <>
@@ -204,7 +201,7 @@ const GraficoResumoFinanceiro: React.FC<Props> = ({ vendas }) => {
             <FaTag />
             <span>{t.descontosDados}</span>
           </div>
-          <span className="font-bold text-blue-500">- {formatarMoeda(valorDesconto)}</span>
+          <span className="font-bold text-blue-500">{descontoFmt}</span>
         </div>
 
         <hr className="my-1 border-gray-400" />

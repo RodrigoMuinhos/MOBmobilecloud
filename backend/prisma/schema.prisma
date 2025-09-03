@@ -1,11 +1,38 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [citext()]
+}
+
+/**
+ * =========================
+ * ENUMS
+ * =========================
+ */
+
+enum StatusPagamento {
+  PENDENTE
+  PAGO
+  CANCELADO
+}
+
+enum TipoMovimento {
+  ENTRADA
+  SAIDA
+  AJUSTE
+  TRANSFERENCIA
+  VENDA
+}
+
+enum TipoUsuario {
+  adm
+  filiado
+  vendedor
 }
 
 /**
@@ -27,17 +54,13 @@ model Cliente {
   cep        String?
 
   vendas Venda[]
-}
 
-enum StatusPagamento {
-  PENDENTE
-  PAGO
-  CANCELADO
+  @@index([nome])
 }
 
 model Venda {
   id                 String          @id @default(uuid())
-  data               DateTime
+  data               DateTime        @default(now())
   clienteId          String
   clienteNome        String
   carrinho           Json
@@ -50,14 +73,23 @@ model Venda {
   acrescimo          Float?
   formaPagamento     String
   parcelas           Int?
-  status_pagamento   StatusPagamento
-  observacoes        String
+  status_pagamento   StatusPagamento @default(PENDENTE)
+  observacoes        String          @default("")
 
-  cliente  Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
   filialId String
-  filial   Filial  @relation(fields: [filialId], references: [id], onDelete: Cascade)
+  filial   Filial @relation(fields: [filialId], references: [id], onDelete: Cascade)
+
+  // vendedor como fonte de divisão por usuário
+  vendedorId String?
+  vendedor   Usuario? @relation(fields: [vendedorId], references: [id], onDelete: SetNull)
+
+  // back-relation p/ movimentos de estoque gerados por esta venda
+  movimentos MovimentoEstoque[] @relation("VendaMovimentos")
 
   @@index([filialId, data])
+  @@index([vendedorId, data])
 }
 
 /**
@@ -67,15 +99,15 @@ model Venda {
  */
 
 model CategoriaEstoque {
-  id       String  @id @default(uuid())
-  marca    String
-  tipo     String
+  id    String @id @default(uuid())
+  marca String
+  tipo  String
 
-  // 🔒 Recomendado obrigatório para unicidade real por filial
+  // unicidade por filial
   filialId String
-  filial   Filial  @relation("FilialCategorias", fields: [filialId], references: [id])
+  filial   Filial @relation("FilialCategorias", fields: [filialId], references: [id])
 
-  // ⬅ back-relation para ProdutoEstoque
+  // back-relation para ProdutoEstoque
   produtos ProdutoEstoque[] @relation("CategoriaProdutos")
 
   @@unique([marca, tipo, filialId], name: "marca_tipo_filial")
@@ -94,9 +126,11 @@ model Estoque {
   filial   Filial? @relation(fields: [filialId], references: [id])
 
   produtos  ProdutoEstoque[]
-  criado_em DateTime @default(now())
+  criado_em DateTime         @default(now())
 
-  // @@unique([nome, cidade, estado])
+  // Se desejar garantir unicidade de nome+cidade por filial, descomente:
+  // @@unique([nome, cidade, filialId], name: "estoque_nome_cidade_filial_unico")
+
   @@index([filialId])
 }
 
@@ -114,15 +148,15 @@ model ProdutoEstoque {
   caixas                Int
   criado_em             DateTime @default(now())
 
-  // 🔗 Categoria
+  // Categoria
   categoriaId String
   categoria   CategoriaEstoque @relation("CategoriaProdutos", fields: [categoriaId], references: [id])
 
-  // 🔗 Multi-estoques: cada item pertence a um estoque
+  // Multi-estoques: pertence a um estoque
   estoqueId String
   estoque   Estoque @relation(fields: [estoqueId], references: [id])
 
-  // 🔗 Compatibilidade/relatórios: filial opcional
+  // Compatibilidade/relatórios: filial opcional
   filialId String?
   filial   Filial? @relation(fields: [filialId], references: [id])
 
@@ -144,23 +178,26 @@ model ProdutoEstoque {
  */
 
 model Usuario {
-  id           String   @id @default(uuid())
+  id           String      @id @default(uuid())
   nome         String
-  email        String   @unique
+  email        String?     @unique @db.Citext // opcional
   senha        String
-  tipo         String
+  tipo         TipoUsuario @default(vendedor)
   cidade       String?
-  cpf          String   @unique
-  nascimento   DateTime
-  whatsapp     String
+  cpf          String      @unique
+  nascimento   DateTime?
+  whatsapp     String? // opcional
   avatar       String?
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  criadoEm     DateTime    @default(now())
+  atualizadoEm DateTime    @updatedAt
+  filialId     String?
+  filial       Filial?     @relation(fields: [filialId], references: [id])
 
-  filialId String?
-  filial   Filial? @relation(fields: [filialId], references: [id])
+  vendas Venda[]
 
   @@index([filialId])
+  @@index([tipo])
+  @@index([nome])
 }
 
 model Membro {
@@ -192,14 +229,16 @@ model Filial {
 
   // back-relations
   categorias CategoriaEstoque[] @relation("FilialCategorias")
-  estoque    ProdutoEstoque[]
+  estoque    ProdutoEstoque[] // produtos associados à filial (via ProdutoEstoque.filialId)
   vendas     Venda[]
   usuarios   Usuario[]
   movimentos MovimentoEstoque[]
 
   transferenciasOrigem  TransferenciaEstoque[] @relation("TransferenciasOrigem")
   transferenciasDestino TransferenciaEstoque[] @relation("TransferenciasDestino")
-  Estoque               Estoque[]
+
+  // estoques físicos cadastrados (multi-estoque)
+  estoques Estoque[]
 
   @@index([nome])
   @@index([uf])
@@ -210,15 +249,6 @@ model Filial {
  * MOVIMENTAÇÃO & TRANSFERÊNCIA DE ESTOQUE
  * =========================================
  */
-
-enum TipoMovimento {
-  ENTRADA
-  SAIDA
-  AJUSTE
-  TRANSFERENCIA
-  VENDA
-}
-
 model MovimentoEstoque {
   id         String        @id @default(uuid())
   data       DateTime      @default(now())
@@ -232,8 +262,12 @@ model MovimentoEstoque {
   filialId String
   filial   Filial @relation(fields: [filialId], references: [id], onDelete: Cascade)
 
-  vendaId         String?
+  // vínculos opcionais para auditoria
+  vendaId String?
+  venda   Venda?  @relation("VendaMovimentos", fields: [vendaId], references: [id], onDelete: SetNull)
+
   transferenciaId String?
+  transferencia   TransferenciaEstoque? @relation("TransfMovimentos", fields: [transferenciaId], references: [id], onDelete: SetNull)
 
   @@index([filialId, data])
   @@index([produtoId, data])
@@ -247,8 +281,8 @@ model TransferenciaEstoque {
   quantidade    Int
   observacao    String?
 
-  origemFilialId  String
-  origemFilial    Filial @relation("TransferenciasOrigem", fields: [origemFilialId], references: [id], onDelete: Cascade)
+  origemFilialId String
+  origemFilial   Filial @relation("TransferenciasOrigem", fields: [origemFilialId], references: [id], onDelete: Cascade)
 
   destinoFilialId String
   destinoFilial   Filial @relation("TransferenciasDestino", fields: [destinoFilialId], references: [id], onDelete: Cascade)
@@ -258,6 +292,9 @@ model TransferenciaEstoque {
 
   produtoDestinoId String?
   produtoDestino   ProdutoEstoque? @relation("ProdutoDestino", fields: [produtoDestinoId], references: [id], onDelete: Cascade)
+
+  // back-relation para movimentos vinculados à transferência
+  movimentos MovimentoEstoque[] @relation("TransfMovimentos")
 
   @@index([origemFilialId, data])
   @@index([destinoFilialId, data])

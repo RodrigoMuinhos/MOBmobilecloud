@@ -13,7 +13,7 @@ import {
   Line,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from 'recharts';
 
 import dayjs from 'dayjs';
@@ -24,7 +24,6 @@ import 'dayjs/locale/pt-br';
 
 import { useTheme } from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
-import { Venda } from '../../../types/banco';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -32,10 +31,30 @@ dayjs.extend(customParseFormat);
 dayjs.locale('pt-br');
 dayjs.tz.setDefault('America/Fortaleza');
 
-type Props = {
-  vendas?: Venda[];
+// ---------- Tipos flexíveis para aceitar API e variações ----------
+type ItemLike = {
+  nome?: string | null;
+  produtoNome?: string | null;
+  quantidade?: number | null;
+  qtd?: number | null;
+  categoria?: string | null;
 };
 
+type VendaLike = {
+  dataVenda?: string | null; // ex: 'YYYY-MM-DD' ou ISO
+  data?: string | null;      // algumas rotas usam 'data'
+  totalFinal?: number | null;
+  total?: number | null;
+  // itens podem vir como 'carrinho' (API nova) ou 'produtos' (legado)
+  carrinho?: ItemLike[] | null;
+  produtos?: ItemLike[] | null;
+};
+
+type Props = {
+  vendas?: VendaLike[];
+};
+
+// ---------- Helpers ----------
 const formatarMesAno = (data: string): string => {
   const formatos = ['YYYY-MM-DDTHH:mm:ss.SSSZ', 'YYYY-MM-DD', 'DD/MM/YYYY', 'MM/YYYY'];
   for (const formato of formatos) {
@@ -54,6 +73,34 @@ const formatarDia = (data: string): string => {
   return 'Inválido';
 };
 
+const toNumber = (v: unknown, fallback = 0) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+};
+
+const itensDaVenda = (v: VendaLike): ItemLike[] => {
+  const lista = [
+    ...(Array.isArray(v.carrinho) ? v.carrinho : []),
+    ...(Array.isArray(v.produtos) ? v.produtos : []),
+  ];
+  return lista;
+};
+
+const nomeDoItem = (i: ItemLike): string =>
+  (i?.nome || i?.produtoNome || 'Produto')?.toString() ?? 'Produto';
+
+const quantidadeDoItem = (i: ItemLike): number =>
+  toNumber(i?.quantidade ?? i?.qtd ?? 0, 0);
+
+const categoriaDoItem = (i: ItemLike): string =>
+  (i?.categoria && i.categoria.trim()) || 'Outros';
+
+const valorDaVenda = (v: VendaLike): number =>
+  toNumber(v.totalFinal ?? v.total ?? 0, 0);
+
+const dataDaVenda = (v: VendaLike): string =>
+  (v.dataVenda ?? v.data ?? '') || '';
+
 const GraficosCentrais: React.FC<Props> = ({ vendas = [] }) => {
   const { temaAtual } = useTheme();
   const { textos, currentLang } = useLanguage();
@@ -63,10 +110,10 @@ const GraficosCentrais: React.FC<Props> = ({ vendas = [] }) => {
   const vendasPorMes = useMemo(() => {
     const mapa: Record<string, number> = {};
     vendas.forEach((venda) => {
-      const data = venda.dataVenda ?? '';
+      const data = dataDaVenda(venda);
       const mes = formatarMesAno(data);
       if (mes !== 'Inválido') {
-        mapa[mes] = (mapa[mes] || 0) + venda.total;
+        mapa[mes] = (mapa[mes] || 0) + valorDaVenda(venda);
       }
     });
     return Object.entries(mapa).map(([mes, valor]) => ({ mes, valor }));
@@ -76,22 +123,23 @@ const GraficosCentrais: React.FC<Props> = ({ vendas = [] }) => {
   const vendasPorDia = useMemo(() => {
     const mapa: Record<string, number> = {};
     vendas.forEach((venda) => {
-      const data = venda.dataVenda ?? '';
+      const data = dataDaVenda(venda);
       const dia = formatarDia(data);
       if (dia !== 'Inválido') {
-        mapa[dia] = (mapa[dia] || 0) + venda.total;
+        mapa[dia] = (mapa[dia] || 0) + valorDaVenda(venda);
       }
     });
     return Object.entries(mapa).map(([dia, valor]) => ({ dia, valor }));
   }, [vendas]);
 
-  // Produtos mais vendidos
+  // Produtos mais vendidos (quantidades)
   const topProdutos = useMemo(() => {
     const mapa: Record<string, number> = {};
     vendas.forEach((venda) => {
-      venda.produtos?.forEach((produto) => {
-        const nome = produto.nome;
-        mapa[nome] = (mapa[nome] || 0) + (produto.quantidade || 1);
+      itensDaVenda(venda).forEach((item) => {
+        const nome = nomeDoItem(item);
+        const qtd = quantidadeDoItem(item);
+        mapa[nome] = (mapa[nome] || 0) + (qtd > 0 ? qtd : 0);
       });
     });
     return Object.entries(mapa)
@@ -100,12 +148,12 @@ const GraficosCentrais: React.FC<Props> = ({ vendas = [] }) => {
       .slice(0, 5);
   }, [vendas]);
 
-  // Categorias
+  // Categorias (contagem de itens)
   const categorias = useMemo(() => {
     const mapa: Record<string, number> = {};
     vendas.forEach((venda) => {
-      venda.produtos?.forEach((produto) => {
-        const cat = produto.categoria ?? 'Outros';
+      itensDaVenda(venda).forEach((item) => {
+        const cat = categoriaDoItem(item);
         mapa[cat] = (mapa[cat] || 0) + 1;
       });
     });
@@ -124,7 +172,7 @@ const GraficosCentrais: React.FC<Props> = ({ vendas = [] }) => {
 
   const cardClasses = `rounded-lg shadow p-4 border backdrop-blur-md bg-opacity-60 relative`;
   const cardStyle = {
-    background: temaAtual.cardGradient || temaAtual.card,
+    background: (temaAtual as any).cardGradient || temaAtual.card,
     color: temaAtual.texto,
     borderColor: temaAtual.destaque,
   };
@@ -177,12 +225,7 @@ const GraficosCentrais: React.FC<Props> = ({ vendas = [] }) => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line
-                type="monotone"
-                dataKey="valor"
-                stroke={temaAtual.destaque}
-                strokeWidth={2}
-              />
+              <Line type="monotone" dataKey="valor" stroke={temaAtual.destaque} strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>

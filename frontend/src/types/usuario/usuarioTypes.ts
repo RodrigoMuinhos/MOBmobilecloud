@@ -1,12 +1,15 @@
-export interface Usuario {
+
+
+export type Usuario = {
   id?: string;
   nome: string;
-  email?: string; // deixe opcional se o back permitir vazio
-  tipo: 'adm' | 'filiado' | 'vendedor';
-  senha: string;
-  cidade?: string;
   cpf: string;
-  nascimento?: string;  // ISO de preferência
+  senha: string;
+  tipo: 'adm' | 'filiado' | 'vendedor';
+  filialId: string | null;
+  email?: string;
+  cidade?: string;
+  nascimento?: string;
   whatsapp?: string;
   avatar?: string | null;
-}
+};

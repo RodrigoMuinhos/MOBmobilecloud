@@ -14,7 +14,12 @@ interface Usuario {
   avatar: string | null;
 }
 
-const PreLoginScreen: React.FC = () => {
+type PreLoginScreenProps = {
+  /** Chamado quando o usuário decide continuar ou quando trocamos de usuário */
+  onContinuar?: () => void;
+};
+
+const PreLoginScreen: React.FC<PreLoginScreenProps> = ({ onContinuar }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -22,9 +27,20 @@ const PreLoginScreen: React.FC = () => {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const localUser = JSON.parse(localStorage.getItem('USUARIO_ATUAL') || '{}');
+    const localUserRaw = localStorage.getItem('USUARIO_ATUAL');
+    const localUser = localUserRaw ? JSON.parse(localUserRaw) : {};
+
+    // logout forçado
+    const forcarLogout = localStorage.getItem('FORCAR_LOGOUT');
+    if (forcarLogout === 'true') {
+      localStorage.removeItem('FORCAR_LOGOUT');
+      trocarUsuario();
+      return;
+    }
+
     if (!localUser?.id) {
-      trocarUsuario(); // fallback se não houver ID
+      // fallback se não houver ID salvo
+      trocarUsuario();
       return;
     }
 
@@ -40,14 +56,6 @@ const PreLoginScreen: React.FC = () => {
       }
     };
 
-    // Verificar logout forçado
-    const forcarLogout = localStorage.getItem('FORCAR_LOGOUT');
-    if (forcarLogout === 'true') {
-      trocarUsuario();
-      localStorage.removeItem('FORCAR_LOGOUT');
-      return;
-    }
-
     carregarUsuario();
 
     const handleEnter = (e: KeyboardEvent) => {
@@ -55,25 +63,28 @@ const PreLoginScreen: React.FC = () => {
     };
     window.addEventListener('keydown', handleEnter);
     return () => window.removeEventListener('keydown', handleEnter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-const executarLogin = () => {
-  if (!usuario) return;
+  const executarLogin = () => {
+    if (!usuario) return;
 
-  const tipo = usuario.tipo;
-  const tiposValidos: TipoUsuario[] = ['adm', 'vendedor', 'filiado'];
-  if (tiposValidos.includes(tipo as TipoUsuario)) {
-    login(tipo as TipoUsuario);
-    navigate('/');
-  }
-};
-
+    const tipo = usuario.tipo;
+    const tiposValidos: TipoUsuario[] = ['adm', 'vendedor', 'filiado'];
+    if (tiposValidos.includes(tipo as TipoUsuario)) {
+      login(tipo as TipoUsuario);
+      // opcional: preservar USUARIO_ATUAL/TIPO_USUARIO aqui se necessário
+      onContinuar?.();     // informa o pai para esconder a PreLogin
+      navigate('/');       // segue para a home
+    }
+  };
 
   const trocarUsuario = () => {
     localStorage.removeItem('LOGIN_LEMBRADO');
     localStorage.removeItem('USUARIO_ATUAL');
     localStorage.removeItem('TIPO_USUARIO');
-    navigate('/login');
+    onContinuar?.();       // informa o pai para esconder a PreLogin
+    navigate('/login');    // vai para tela de login
   };
 
   const nome = usuario?.nome || 'Usuário';
@@ -110,7 +121,11 @@ const executarLogin = () => {
 
       <div className="w-56 h-56 rounded-full bg-white/10 backdrop-blur-2xl flex items-center justify-center shadow-2xl mb-8 border-4 border-orange-300">
         {avatar ? (
-          <img src={avatar} alt="Avatar" className="w-full h-full rounded-full object-cover opacity-90" />
+          <img
+            src={avatar}
+            alt="Avatar"
+            className="w-full h-full rounded-full object-cover opacity-90"
+          />
         ) : (
           <FaUser className="text-[120px] text-orange-300 opacity-70" />
         )}

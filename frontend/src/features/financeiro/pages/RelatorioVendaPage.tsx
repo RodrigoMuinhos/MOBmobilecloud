@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaDownload, FaUpload, FaTrash } from 'react-icons/fa';
 
 import { useTheme } from '../../../context/ThemeContext';
@@ -29,18 +29,18 @@ const RelatorioVendaPage: React.FC = () => {
   const [vendaSelecionada, setVendaSelecionada] = useState<VendaAPI | null>(null);
   const [recibosDisponiveis, setRecibosDisponiveis] = useState<VendaAPI[] | null>(null);
 
-  useEffect(() => {
-    buscarVendas();
-  }, []);
-
-  const buscarVendas = async () => {
+  const buscarVendas = useCallback(async () => {
     try {
       const response = await api.get('/vendas');
       setVendas(response.data);
     } catch (error) {
       console.error('Erro ao carregar vendas:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    buscarVendas();
+  }, [buscarVendas]);
 
   const handleExportarJSON = () => {
     const blob = new Blob([JSON.stringify(vendas, null, 2)], { type: 'application/json' });
@@ -59,13 +59,10 @@ const RelatorioVendaPage: React.FC = () => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const texto = e.target?.result as string;
+        const texto = (e.target?.result as string) || '[]';
         const vendasImportadas: VendaAPI[] = JSON.parse(texto);
 
-        await Promise.all(
-          vendasImportadas.map((venda) => api.post('/vendas', venda))
-        );
-
+        await Promise.all(vendasImportadas.map((venda) => api.post('/vendas', venda)));
         await buscarVendas();
       } catch (error) {
         alert('Erro ao importar vendas.');
@@ -138,7 +135,7 @@ const RelatorioVendaPage: React.FC = () => {
             <FaDownload size={16} color="white" />
           </button>
           <button
-            onClick={() => document.getElementById('input-importar-json')?.click()}
+            onClick={() => (document.getElementById('input-importar-json') as HTMLInputElement)?.click()}
             className="rounded-full p-2 bg-white/10 hover:bg-white/20 transition"
             title="Importar Vendas"
           >

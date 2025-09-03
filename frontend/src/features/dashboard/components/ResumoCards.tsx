@@ -4,24 +4,35 @@ import { FaShoppingCart, FaUsers, FaBox, FaDollarSign } from 'react-icons/fa';
 import ResumoCard from './ResumoCard';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
-import { Venda, ProdutoEstoqueAPI } from '../../../types/banco';
 import api from '../../../services/api';
+
+// Tipos mínimos compatíveis com as respostas da API atual
+type VendaLike = {
+  cliente?: { cpf?: string | null } | null;
+  totalFinal?: number | null;
+  total?: number | null; // fallback
+};
+
+type ProdutoEstoqueLike = {
+  caixas?: number | null;
+  unidades_por_caixa?: number | null;
+};
 
 const ResumoCards: React.FC = () => {
   const { textos, currentLang } = useLanguage();
   const { temaAtual } = useTheme();
   const idioma = textos[currentLang];
 
-  const [vendas, setVendas] = useState<Venda[]>([]);
-  const [estoque, setEstoque] = useState<ProdutoEstoqueAPI[]>([]);
+  const [vendas, setVendas] = useState<VendaLike[]>([]);
+  const [estoque, setEstoque] = useState<ProdutoEstoqueLike[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resVendas = await api.get('/vendas');
         const resEstoque = await api.get('/estoque');
-        setVendas(resVendas.data || []);
-        setEstoque(resEstoque.data || []);
+        setVendas(Array.isArray(resVendas.data) ? resVendas.data : []);
+        setEstoque(Array.isArray(resEstoque.data) ? resEstoque.data : []);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       }
@@ -32,19 +43,24 @@ const ResumoCards: React.FC = () => {
   const totalVendas = vendas.length;
 
   const totalClientes = new Set(
-    vendas.map((v) => v.cliente?.cpf).filter((cpf) => !!cpf)
+    vendas.map((v) => (v.cliente?.cpf || '').replace(/\D/g, '')).filter(Boolean)
   ).size;
 
-  const valorTotal = vendas.reduce((acc, v) => acc + (v.total || 0), 0);
+  const valorTotal = vendas.reduce(
+    (acc, v) => acc + (Number(v.totalFinal ?? v.total ?? 0) || 0),
+    0
+  );
+
   const receitaFormatada = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   }).format(valorTotal);
 
-  const totalUnidades = estoque.reduce(
-    (acc, item) => acc + (item.caixas || 0) * (item.unidades_por_caixa || 0),
-    0
-  );
+  const totalUnidades = estoque.reduce((acc, item) => {
+    const caixas = Number(item.caixas ?? 0) || 0;
+    const upc = Number(item.unidades_por_caixa ?? 0) || 0;
+    return acc + caixas * upc;
+  }, 0);
 
   return (
     <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

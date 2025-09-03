@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../../context/ThemeContext';
-import { useLanguage } from '../../../context/LanguageContext'; // ✅ novo hook
+import { useLanguage } from '../../../context/LanguageContext';
 
 type Props = {
   totalClientes: number;
@@ -9,11 +9,11 @@ type Props = {
 
 const Conquistas: React.FC<Props> = ({ totalClientes, totalVendas }) => {
   const { temaAtual } = useTheme();
-  const { language } = useLanguage();
-  const t = language.dashboard;
+  const { textos, currentLang } = useLanguage();
+  const t = textos[currentLang].dashboard;
 
   const containerStyle = {
-    background: temaAtual.cardGradient,
+    background: (temaAtual as any).cardGradient || temaAtual.card,
     color: temaAtual.texto,
     backdropFilter: 'blur(8px)',
     WebkitBackdropFilter: 'blur(8px)',
@@ -31,17 +31,13 @@ const Conquistas: React.FC<Props> = ({ totalClientes, totalVendas }) => {
     fontSize: '1.25rem',
   });
 
-  const barraBaseStyle = {
-    backgroundColor: temaAtual.fundoAlt,
-  };
-
+  const barraBaseStyle = { backgroundColor: temaAtual.fundoAlt };
   const barraProgressoClientes = {
     width: `${Math.min((totalClientes / 30) * 100, 100)}%`,
     background: temaAtual.destaque,
     height: '100%',
     transition: 'width 0.7s ease-in-out',
   };
-
   const barraProgressoVendas = {
     width: `${Math.min((totalVendas / 30) * 100, 100)}%`,
     background: temaAtual.contraste,
@@ -51,14 +47,12 @@ const Conquistas: React.FC<Props> = ({ totalClientes, totalVendas }) => {
 
   return (
     <>
-      {/* Medalhas */}
       <div className="p-6 rounded-lg shadow mb-6" style={containerStyle}>
         <h2 className="text-lg font-bold mb-4 text-center" style={{ color: temaAtual.destaque }}>
           {t.conquistas}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Clientes Cadastrados */}
           <div className="p-4 rounded-lg" style={cardStyle}>
             <p className="text-sm mb-1">{t.clientesMeta}</p>
             <p className="text-2xl font-bold">{totalClientes}</p>
@@ -69,7 +63,6 @@ const Conquistas: React.FC<Props> = ({ totalClientes, totalVendas }) => {
             </div>
           </div>
 
-          {/* Vendas Realizadas */}
           <div className="p-4 rounded-lg" style={cardStyle}>
             <p className="text-sm mb-1">{t.vendasMeta}</p>
             <p className="text-2xl font-bold">{totalVendas}</p>
@@ -82,27 +75,19 @@ const Conquistas: React.FC<Props> = ({ totalClientes, totalVendas }) => {
         </div>
       </div>
 
-      {/* Barras de Progresso */}
       <div className="p-6 rounded-lg shadow" style={containerStyle}>
         <h2 className="text-lg font-bold mb-4 text-center" style={{ color: temaAtual.destaque }}>
           {t.progressoMetas}
         </h2>
         <div className="space-y-4">
-          {/* Progresso Clientes */}
           <div>
-            <p className="text-sm mb-1">
-              {t.clientesMeta}: {totalClientes}/30
-            </p>
+            <p className="text-sm mb-1">{t.clientesMeta}: {totalClientes}/30</p>
             <div className="w-full rounded h-3 overflow-hidden" style={barraBaseStyle}>
               <div style={barraProgressoClientes} />
             </div>
           </div>
-
-          {/* Progresso Vendas */}
           <div>
-            <p className="text-sm mb-1">
-              {t.vendasMeta}: {totalVendas}/30
-            </p>
+            <p className="text-sm mb-1">{t.vendasMeta}: {totalVendas}/30</p>
             <div className="w-full rounded h-3 overflow-hidden" style={barraBaseStyle}>
               <div style={barraProgressoVendas} />
             </div>

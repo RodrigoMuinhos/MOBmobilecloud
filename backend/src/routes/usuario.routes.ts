@@ -1,5 +1,5 @@
-// src/routes/usuario.routes.ts
-import { Router } from 'express';
+// backend/src/routes/usuario.routes.ts
+import { Router, RequestHandler } from 'express';
 import {
   listarUsuarios,
   obterUsuario,
@@ -7,11 +7,20 @@ import {
   atualizarUsuario,
   deletarUsuario,
   loginUsuario,
-  uploadAvatarMiddleware,
   atualizarAvatar,
 } from '../controllers/usuario.controller';
+import uploadAvatarSingle from '../middlewares/upload'; // multer single('avatar')
 
 const router = Router();
+
+/**
+ * Normaliza o CPF do path param para apenas dígitos
+ * (evita erro com "088.889.898-29" vindo por URL).
+ */
+const normalizeCpfParam: RequestHandler = (req, _res, next) => {
+  if (req.params?.cpf) req.params.cpf = String(req.params.cpf).replace(/\D/g, '');
+  next();
+};
 
 /**
  * @swagger
@@ -27,31 +36,14 @@ const router = Router();
  *     Usuario:
  *       type: object
  *       properties:
- *         nome:
- *           type: string
- *         email:
- *           type: string
- *           nullable: true
- *         tipo:
- *           type: string
- *           enum: [adm, vendedor, filiado]
- *         cidade:
- *           type: string
- *           nullable: true
- *         cpf:
- *           type: string
- *           description: Somente dígitos
- *         nascimento:
- *           type: string
- *           nullable: true
- *           description: 'Ex.: "1990-05-20"'
- *         whatsapp:
- *           type: string
- *           nullable: true
- *           description: Somente dígitos
- *         avatar:
- *           type: string
- *           nullable: true
+ *         nome: { type: string }
+ *         email: { type: string, nullable: true }
+ *         tipo: { type: string, enum: [adm, vendedor, filiado] }
+ *         cidade: { type: string, nullable: true }
+ *         cpf: { type: string, description: "Somente dígitos" }
+ *         nascimento: { type: string, nullable: true, description: "Ex.: 1990-05-20" }
+ *         whatsapp: { type: string, nullable: true, description: "Somente dígitos" }
+ *         avatar: { type: string, nullable: true }
  *
  *     CriarUsuarioInput:
  *       type: object
@@ -83,22 +75,15 @@ const router = Router();
  *       type: object
  *       required: [identificador, senha]
  *       properties:
- *         identificador:
- *           type: string
- *           description: CPF (somente dígitos) ou e-mail
- *         senha:
- *           type: string
+ *         identificador: { type: string, description: "CPF (somente dígitos) ou e-mail" }
+ *         senha: { type: string }
  *
  *     LoginResponse:
  *       type: object
  *       properties:
- *         usuario:
- *           $ref: '#/components/schemas/Usuario'
- *         tipo:
- *           type: string
- *           enum: [adm, vendedor, filiado]
- *         token:
- *           type: string
+ *         usuario: { $ref: '#/components/schemas/Usuario' }
+ *         tipo: { type: string, enum: [adm, vendedor, filiado] }
+ *         token: { type: string }
  */
 
 /**
@@ -131,16 +116,9 @@ const router = Router();
  *           schema:
  *             $ref: '#/components/schemas/CriarUsuarioInput'
  *     responses:
- *       201:
- *         description: Usuário cadastrado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Usuario'
- *       400:
- *         description: Dados inválidos
- *       409:
- *         description: CPF ou e-mail já cadastrado
+ *       201: { description: Usuário cadastrado com sucesso }
+ *       400: { description: Dados inválidos }
+ *       409: { description: CPF ou e-mail já cadastrado }
  */
 
 /**
@@ -162,12 +140,9 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/LoginResponse'
- *       400:
- *         description: Parâmetros ausentes
- *       401:
- *         description: Credenciais inválidas
- *       500:
- *         description: Erro no login
+ *       400: { description: Parâmetros ausentes }
+ *       401: { description: Credenciais inválidas }
+ *       500: { description: Erro no login }
  */
 
 /**
@@ -182,18 +157,11 @@ const router = Router();
  *       - in: path
  *         name: cpf
  *         required: true
+ *         schema: { type: string }
  *         description: Somente dígitos
- *         schema:
- *           type: string
  *     responses:
- *       200:
- *         description: Usuário retornado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Usuario'
- *       404:
- *         description: Usuário não encontrado
+ *       200: { description: Usuário retornado com sucesso }
+ *       404: { description: Usuário não encontrado }
  *
  *   put:
  *     summary: Atualiza os dados de um usuário pelo CPF
@@ -204,9 +172,8 @@ const router = Router();
  *       - in: path
  *         name: cpf
  *         required: true
+ *         schema: { type: string }
  *         description: Somente dígitos
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -214,16 +181,9 @@ const router = Router();
  *           schema:
  *             $ref: '#/components/schemas/AtualizarUsuarioInput'
  *     responses:
- *       200:
- *         description: Usuário atualizado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Usuario'
- *       404:
- *         description: Usuário não encontrado
- *       409:
- *         description: CPF ou e-mail já cadastrado
+ *       200: { description: Usuário atualizado com sucesso }
+ *       404: { description: Usuário não encontrado }
+ *       409: { description: CPF ou e-mail já cadastrado }
  *
  *   delete:
  *     summary: Remove um usuário pelo CPF
@@ -234,14 +194,11 @@ const router = Router();
  *       - in: path
  *         name: cpf
  *         required: true
+ *         schema: { type: string }
  *         description: Somente dígitos
- *         schema:
- *           type: string
  *     responses:
- *       200:
- *         description: Usuário deletado com sucesso
- *       404:
- *         description: Usuário não encontrado
+ *       200: { description: Usuário deletado com sucesso }
+ *       404: { description: Usuário não encontrado }
  */
 
 /**
@@ -250,15 +207,12 @@ const router = Router();
  *   post:
  *     summary: Atualiza o avatar do usuário
  *     tags: [Usuários]
- *     consumes:
- *       - multipart/form-data
  *     parameters:
  *       - in: path
  *         name: cpf
  *         required: true
+ *         schema: { type: string }
  *         description: CPF do usuário (somente dígitos)
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -270,23 +224,19 @@ const router = Router();
  *                 type: string
  *                 format: binary
  *     responses:
- *       200:
- *         description: Avatar atualizado com sucesso
- *       400:
- *         description: CPF inválido ou arquivo não enviado
- *       404:
- *         description: Usuário não encontrado
+ *       200: { description: Avatar atualizado com sucesso }
+ *       400: { description: CPF inválido ou arquivo não enviado }
+ *       404: { description: Usuário não encontrado }
  */
 
-// === Ordem importa: /login antes de /:cpf
+// === Ordem importa: /login e /:cpf/avatar vêm ANTES de /:cpf ===
 router.get('/', listarUsuarios);
 router.post('/login', loginUsuario);
-router.get('/:cpf', obterUsuario);
-router.post('/', salvarUsuario);
-router.put('/:cpf', atualizarUsuario);
-router.delete('/:cpf', deletarUsuario);
+router.post('/:cpf/avatar', normalizeCpfParam, uploadAvatarSingle, atualizarAvatar);
 
-// === Novo endpoint de upload de avatar ===
-router.post('/:cpf/avatar', uploadAvatarMiddleware, atualizarAvatar);
+router.post('/', salvarUsuario);
+router.get('/:cpf', normalizeCpfParam, obterUsuario);
+router.put('/:cpf', normalizeCpfParam, atualizarUsuario);
+router.delete('/:cpf', normalizeCpfParam, deletarUsuario);
 
 export default router;

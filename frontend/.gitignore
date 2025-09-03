@@ -1,23 +1,19 @@
-# Diretórios a ignorar
+# =========================
+# Monorepo (geral)
+# =========================
 node_modules/
 dist/
+coverage/
+.eslintcache
+
+# IDE / Editor
 .vscode/
-src-tauri/target/
-src-tauri/Cargo.lock
+.idea/
+.history/
 
-# Build gerado do Tauri
-/src-tauri/target/
-**/target/
-
-# Executáveis
-*.exe
-*.app
-*.dmg
-*.msi
-
-# Arquivos de ambiente
-.env
-.env.* 
+# SO
+.DS_Store
+Thumbs.db
 
 # Logs
 npm-debug.log*
@@ -25,6 +21,68 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Sistema operacional
-.DS_Store
-Thumbs.db
+# =========================
+# Ambientes / Segredos
+# =========================
+.env
+.env.*
+.env.local
+.env.*.local
+
+# =========================
+# Frontend (Vite)
+# =========================
+frontend/dist/
+frontend/dev-dist/
+
+# Assets dinâmicos (mantenha .gitkeep ou subpasta /static)
+frontend/public/avatars/
+!frontend/public/avatars/.gitkeep
+!frontend/public/avatars/static/**
+
+# =========================
+# Backend (Node/Express)
+# =========================
+backend/dist/
+
+# Uploads gerados em runtime
+backend/uploads/
+backend/src/uploads/
+
+# Dumps / arquivos temporários
+*.dump
+body.json
+
+# Prisma
+# (IMPORTANTE: não ignore migrations — devem ser versionadas)
+# backend/prisma/migrations/**  <-- NÃO ignore
+
+# =========================
+# Mobile (Next.js)
+# =========================
+mobile/.next/
+mobile/out/
+.vercel/
+
+# =========================
+# Tauri (Rust)
+# =========================
+src-tauri/target/
+**/target/
+src-tauri/Cargo.lock
+
+# Artefatos de build desktop
+*.exe
+*.app
+*.dmg
+*.msi
+*.AppImage
+*.deb
+*.rpm
+
+# =========================
+# Docker
+# =========================
+# (Se tiver volumes/dados locais, ignore a pasta abaixo – ajuste conforme seu setup)
+docker/data/
+docker/**/.env

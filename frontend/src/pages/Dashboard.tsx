@@ -1,3 +1,4 @@
+// src/pages/Dashboard.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { FaTrash, FaDownload, FaUpload } from 'react-icons/fa';
@@ -5,84 +6,85 @@ import JSZip from 'jszip';
 
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
-import { carregarBanco } from '../data/bancoLocal';
-import { BancoMobSupply, Cliente, Venda, ItemEstoque } from '../types/banco';
 
 import DashboardCharts from '../features/dashboard/components/DashboardCharts';
 import CardClientes from './dashcard/CardClientes';
 import CardVendas from './dashcard/CardVendas';
 import CardEstoque from './dashcard/CardEstoque';
 import CardReceita from './dashcard/CardReceita';
+import api from '../services/api';
+
+// ✅ use o tipo oficial da API (remove o tipo local que conflita)
+import { VendaAPI } from '../types/api/vendaApi.types';
+
+type FilialAPI = { id: string; nome: string; uf?: string | null; cidade?: string | null };
 
 const Dashboard: React.FC = () => {
   const { temaAtual } = useTheme();
   const { currentLang, textos } = useLanguage();
   const idioma = textos[currentLang];
-  const tipoUsuario = localStorage.getItem('tipoUsuario');
+  const tipoUsuario = typeof window !== 'undefined' ? localStorage.getItem('tipoUsuario') : null;
 
-  const [clientes, setClientes] = useState(0);
-  const [clientesTotais, setClientesTotais] = useState(0);
-  const [vendas, setVendas] = useState(0);
-  const [caixasTotais, setCaixasTotais] = useState(0);
-  const [unidadesTotais, setUnidadesTotais] = useState(0);
-  const [receita, setReceita] = useState(0);
-  const [vendasLista, setVendasLista] = useState<Venda[]>([]);
+  // seleção de filial ('' = todas)
+  const [filiais, setFiliais] = useState<FilialAPI[]>([]);
+  const [filialSelecionada, setFilialSelecionada] = useState<string>('');
 
+  // vendas para o gráfico
+  const [vendasLista, setVendasLista] = useState<VendaAPI[]>([]);
+  const [carregandoVendas, setCarregandoVendas] = useState<boolean>(true);
+
+  // ---- carregar filiais para o select
   useEffect(() => {
-    const banco: BancoMobSupply = carregarBanco();
+    const carregarFiliais = async () => {
+      try {
+        const resp = await api.get<FilialAPI[]>('/filiais'); // ajuste a rota se for diferente
+        const lista = Array.isArray(resp.data) ? resp.data : [];
+        setFiliais(lista);
 
-    // ✅ CLIENTES
-    const clientesArray: Cliente[] = Array.isArray(banco.clientes?.pf) ? banco.clientes.pf : [];
-    const clientesValidos = clientesArray.filter(
-      (cliente) => !cliente.incompleto && cliente.nome && cliente.nascimento
-    );
-    setClientes(clientesValidos.length);
-    setClientesTotais(clientesArray.length);
-
-    // ✅ VENDAS
-    const vendasArray: Venda[] = Array.isArray(banco.vendas)
-      ? banco.vendas
-      : typeof banco.vendas === 'object'
-        ? Object.values(banco.vendas)
-        : [];
-    setVendas(vendasArray.length);
-    setVendasLista(vendasArray);
-
-    const totalReceita = vendasArray.reduce((acc, v) => acc + (v.total ?? 0), 0);
-    setReceita(totalReceita);
-
-    // ✅ ESTOQUE
-    const estoqueBanco = banco.estoque || {};
-    let caixas = 0;
-    let unidades = 0;
-
-    Object.values(estoqueBanco).forEach((tipos) => {
-      if (typeof tipos === 'object') {
-        Object.values(tipos).forEach((lista) => {
-          if (Array.isArray(lista)) {
-            lista.forEach((produto: ItemEstoque) => {
-              caixas += produto.caixas || 0;
-              unidades += (produto.caixas || 0) * (produto.unidades_por_caixa || 0);
-            });
-          }
-        });
+        const salvo = localStorage.getItem('filialId') || '';
+        if (salvo && lista.some((f) => f.id === salvo)) {
+          setFilialSelecionada(salvo);
+        } else {
+          setFilialSelecionada('');
+          localStorage.removeItem('filialId');
+        }
+      } catch (e) {
+        console.error('Erro ao carregar filiais:', e);
       }
-    });
-
-    setCaixasTotais(caixas);
-    setUnidadesTotais(unidades);
+    };
+    carregarFiliais();
   }, []);
 
+  // ---- carregar vendas (para o gráfico), dependente da filial
+  useEffect(() => {
+    const carregarVendas = async () => {
+      try {
+        setCarregandoVendas(true);
+        const params = filialSelecionada ? { filialId: filialSelecionada } : undefined;
+        const resp = await api.get<VendaAPI[]>('/vendas', { params });
+        setVendasLista(Array.isArray(resp.data) ? resp.data : []);
+      } catch (e) {
+        console.error('Erro ao carregar vendas:', e);
+        setVendasLista([]);
+      } finally {
+        setCarregandoVendas(false);
+      }
+    };
+    // persistir preferência
+    if (filialSelecionada) localStorage.setItem('filialId', filialSelecionada);
+    else localStorage.removeItem('filialId');
+
+    carregarVendas();
+  }, [filialSelecionada]);
+
+  // exporta todo localStorage num zip (mantive funcionalidade antiga)
   const exportarJSON = () => {
     const zip = new JSZip();
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key) {
-        const value = localStorage.getItem(key);
-        if (value) {
-          zip.file(`${key}.json`, value);
-        }
-      }
+      if (!key) continue;
+      const value = localStorage.getItem(key);
+      if (value) zip.file(`${key}.json`, value);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => {
       const link = document.createElement('a');
@@ -125,61 +127,89 @@ const Dashboard: React.FC = () => {
       style={{ backgroundColor: temaAtual.fundo, color: temaAtual.texto }}
     >
       {/* Cabeçalho */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <h1 className="text-3xl font-bold" style={{ color: temaAtual.destaque }}>
           {idioma.dashboard?.painel ?? 'Painel Geral - MOB Supply'}
         </h1>
 
-        <div className="flex gap-2 items-center">
-          <button
-            onClick={exportarJSON}
-            title={idioma.dashboard?.exportarJSON ?? 'Exportar JSON'}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
-            style={{
-              backgroundColor: temaAtual.card,
-              color: temaAtual.destaque,
-              border: `1px solid ${temaAtual.destaque}`,
-            }}
-          >
-            <FaDownload />
-          </button>
-
-          <label
-            title={idioma.dashboard?.importarJSON ?? 'Importar JSON'}
-            className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105"
-            style={{
-              backgroundColor: temaAtual.card,
-              color: temaAtual.destaque,
-              border: `1px solid ${temaAtual.destaque}`,
-            }}
-          >
-            <FaUpload />
-            <input type="file" multiple accept=".json" onChange={importarJSON} className="hidden" />
+        {/* Select de Filial (segue o tema) */}
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2">
+            <span className="text-sm opacity-80">Filial:</span>
+            <select
+              value={filialSelecionada}
+              onChange={(e) => setFilialSelecionada(e.target.value)}
+              className="rounded-md px-3 py-2 text-sm outline-none"
+              style={{
+                backgroundColor: temaAtual.card,
+                color: temaAtual.texto,
+                border: `1px solid ${temaAtual.texto || '#e5e7eb'}`,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              }}
+            >
+              <option value="">Todas as filiais</option>
+              {filiais.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.nome}
+                  {f.uf ? ` - ${f.uf}` : ''}
+                  {f.cidade ? ` / ${f.cidade}` : ''}
+                </option>
+              ))}
+            </select>
           </label>
 
-          {tipoUsuario === 'adm' && (
+          <div className="flex gap-2 items-center">
             <button
-              onClick={limparLocalStorage}
-              title={idioma.dashboard?.limparDados ?? 'Limpar Histórico'}
+              onClick={exportarJSON}
+              title={idioma.dashboard?.exportarJSON ?? 'Exportar JSON'}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
-              style={{ backgroundColor: '#b91c1c', color: '#fff' }}
+              style={{
+                backgroundColor: temaAtual.card,
+                color: temaAtual.destaque,
+                border: `1px solid ${temaAtual.destaque}`,
+              }}
             >
-              <FaTrash />
+              <FaDownload />
             </button>
-          )}
+
+            <label
+              title={idioma.dashboard?.importarJSON ?? 'Importar JSON'}
+              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105"
+              style={{
+                backgroundColor: temaAtual.card,
+                color: temaAtual.destaque,
+                border: `1px solid ${temaAtual.destaque}`,
+              }}
+            >
+              <FaUpload />
+              <input type="file" multiple accept=".json" onChange={importarJSON} className="hidden" />
+            </label>
+
+            {tipoUsuario === 'adm' && (
+              <button
+                onClick={limparLocalStorage}
+                title={idioma.dashboard?.limparDados ?? 'Limpar Histórico'}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
+                style={{ backgroundColor: '#b91c1c', color: '#fff' }}
+              >
+                <FaTrash />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Cards principais */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <CardClientes clientes={clientes} total={clientesTotais} label={idioma.dashboard?.clientesAtivos ?? 'Clientes Ativos'} />
-        <CardVendas vendas={vendas} label={idioma.dashboard?.vendasRealizadas ?? 'Vendas Realizadas'} />
+        {/* Cards em modo automático: cada um consulta sua rota e respeita a filial do localStorage */}
+        <CardClientes label={idioma.dashboard?.clientesAtivos ?? 'Clientes Ativos'} />
+        <CardVendas label={idioma.dashboard?.vendasRealizadas ?? 'Vendas Realizadas'} />
         <CardEstoque label={idioma.dashboard?.itensEstoque ?? 'Itens em Estoque'} />
-        <CardReceita receita={receita} label={idioma.dashboard?.receitaEstimada ?? 'Receita Estimada'} />
+        <CardReceita label={idioma.dashboard?.receitaEstimada ?? 'Receita Estimada'} />
       </div>
 
       {/* Gráfico de Vendas */}
-     <DashboardCharts vendas={vendasLista} />
+      <DashboardCharts vendas={vendasLista} carregando={carregandoVendas} />
     </div>
   );
 };
