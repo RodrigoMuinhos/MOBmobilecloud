@@ -1,43 +1,94 @@
-# Dependências
+# =========================
+# Node / Monorepo
+# =========================
 node_modules/
 **/node_modules/
 
-# Build
+# =========================
+# Builds / Artifacts
+# =========================
 dist/
 build/
 **/dist/
 **/build/
+.next/
+out/
+coverage/
 
-# Arquivos de configuração locais
+# TypeScript build info / caches
+*.tsbuildinfo
+.cache/
+.eslintcache
+
+# =========================
+# Env & credenciais (não versionar)
+# =========================
 .env
 .env.*.local
-*.log
-.vscode/
-*.yml
-*.yaml
-*.tgz
 
-# Arquivos do Electron
+# =========================
+# Logs
+# =========================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# IDE / SO
+# =========================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# =========================
+# Uploads/runtime (gerados em produção/dev)
+# Ajuste conforme sua estrutura
+# =========================
+uploads/
+public/uploads/
+
+# =========================
+# Electron bundles
+# =========================
 win-unpacked/
 *.exe
 *.dmg
 *.app
 *.asar
 
+# =========================
 # Prisma
+# (NÃO ignore migrations/)
+# =========================
 *.sqlite
 *.db
 *.db-journal
-**/prisma/migrations/
+# prisma/migrations/  <-- mantenha versionado!
 
-# Outros
-.DS_Store
-Thumbs.db
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
-pnpm-lock.yaml
+# =========================
+# Docker
+# (Mantenha docker-compose.yml versionado)
+# =========================
+docker-data/
+db-data/
+*.pid
+
+# =========================
+# Testes (opcional)
+# =========================
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+
+# =========================
+# Miscelânea
+# =========================
+*.tgz
 *.bak
 *.tmp
 *.swp

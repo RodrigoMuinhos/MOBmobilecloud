@@ -2,6 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
+/* ================================
+   Variáveis de layout (mobile-first)
+=================================== */
+:root {
+  /* Header */
+  --header-h: 56px;
+  --safe-top: env(safe-area-inset-top);
+  --header-total: calc(var(--header-h) + var(--safe-top));
+
+  /* Sidebar (desktop) */
+  --sidebar-width-open: 16rem;
+  --sidebar-width-collapsed: 4rem;
+  /* Largura atual da sidebar no desktop (AppShell atualiza esta var) */
+  --sidebar-width: var(--sidebar-width-open);
+
+  /* Offset do conteúdo no mobile quando drawer abre (AppShell atualiza) */
+  --content-mobile-offset: 0;
 }
+
+/* Evita “scroll por baixo” em iOS e melhora comportamento do overlay */
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+/* Container raiz (caso precise ocupar toda altura) */
+#root { height: 100%; }
+
+/* ================================
+   Header
+=================================== */
+.app-header {
+  padding-top: var(--safe-top);
+  height: var(--header-h);
+}
+
+/* ================================
+   Sidebar (apenas utilitário, se usar classe)
+   -> No AppShell já aplicamos width/posicionamento via inline styles.
+   -> Mantemos aqui transições e correções genéricas.
+=================================== */
+.sidebar {
+  width: var(--sidebar-width);
+  transition: width 200ms ease, transform 200ms ease;
+  will-change: width, transform;
+}
+
+/* Drawer/backdrop começam abaixo do header no mobile (se usar classes) */
+.drawer-backdrop {
+  top: var(--header-total);
+}
+
+/* ================================
+   Conteúdo
+   - No layout em flex (aside + main), NÃO precisamos empurrar.
+   - Garantimos margin-left: 0 no desktop para evitar faixa branca.
+=================================== */
+
+/* Mobile: se o drawer estiver aberto e você quiser empurrar o conteúdo,
+   use esta var (AppShell controla). Se não empurra, pode deixar 0. */
+@media (max-width: 767.98px) {
+  .app-content {
+    margin-left: var(--content-mobile-offset, 0);
+    transition: margin-left 200ms ease;
+  }
+}
+
+/* Desktop: com layout em flex, o aside ocupa espaço e o main encosta.
+   Portanto, mantenha margin-left = 0 (remove “lacuna branca”). */
+@media (min-width: 768px) {
+  .app-content {
+    margin-left: 0;
+    transition: margin-left 200ms ease;
+  }
+}
+
+/* ================================
+   (Opcional) Modo “push layout” no desktop
+   Se você NÃO estiver usando flex (ou quiser empurrar manualmente),
+   descomente o bloco abaixo e remova o margin-left:0 acima.
+=================================== */
+/*
+@media (min-width: 768px) {
+  .app-content {
+    margin-left: var(--sidebar-width, 16rem);
+    transition: margin-left 200ms ease;
+  }
+}
+*/
+
+/* ================================
+   Utilitários visuais
+=================================== */
+.no-scrollbar::-webkit-scrollbar { width: 0; height: 0; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* Previne que menus flutuantes sejam cortados por algum wrapper */
+.overflow-visible-important { overflow: visible !important; }

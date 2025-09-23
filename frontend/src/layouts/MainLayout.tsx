@@ -1,29 +1,12 @@
+// layouts/MainLayout.tsx
 import React from 'react';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
 import { Outlet } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
+import AppShell from '../components/layout/AppShell';
 
-const MainLayout = () => {
-  const { temaAtual } = useTheme();
-
+export default function MainLayout() {
   return (
-    <div style={{ backgroundColor: temaAtual.fundo, color: temaAtual.texto }} className="min-h-screen transition-all">
-      {/* Header fixo no topo */}
-      <Header />
-
-      {/* Container abaixo do Header */}
-      <div className="flex">
-        {/* Sidebar do lado esquerdo */}
-        <Sidebar />
-
-        {/* Conteúdo principal */}
-        <main className="flex-1 p-6 overflow-y-auto" style={{ backgroundColor: temaAtual.card }}>
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <AppShell>
+      <Outlet />
+    </AppShell>
   );
-};
-
-export default MainLayout;
+}

@@ -1,12 +1,16 @@
-// src/app.ts
+// backend/src/app.ts
 import express, { NextFunction, Request, Response } from 'express';
 import cors, { CorsOptions } from 'cors';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
 
-// Prisma p/ health DB
 import { prisma } from './prisma';
+import swaggerSpec from './config/swagger';
 
-// Rotas de domínio
+// middlewares
+import { verifyJWT, requireRole } from './middlewares/auth';
+
+// rotas de domínio
 import clienteRoutes from './routes/cliente.routes';
 import vendaRoutes from './routes/venda.routes';
 import produtoEstoqueRoutes from './routes/produtoEstoque.routes';
@@ -15,13 +19,8 @@ import membroRoutes from './routes/membro.routes';
 import filialRoutes from './routes/filial.routes';
 import estoqueRoutes from './routes/estoque.routes';
 import categoriaEstoqueRoutes from './routes/categoriaEstoque.routes';
-
-// Auth centralizado
-import { verifyJWT, requireRole } from './middlewares/auth';
-
-// Swagger
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger';
+// auth controller (login simples)
+import { loginController } from './controllers/auth.controller';
 
 const app = express();
 
@@ -32,23 +31,31 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ===== CORS =====
-// Você pode sobrepor via .env: CORS_ORIGIN="http://localhost:5173,http://192.168.40.139:5173"
-const defaults = ['http://localhost:5173', 'http://192.168.40.139:5173'];
+const defaults = [
+  'http://localhost:3030',
+  'http://192.168.40.139:3030',
+  // adicione aqui seus front-ends durante o dev:
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+];
 const envList = (process.env.CORS_ORIGIN ?? '')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean);
-const ALLOWED = new Set<string>([...defaults, ...envList]);
+const ALLOW = new Set<string>([...defaults, ...envList]);
 
 const corsOptions: CorsOptions = {
   origin(origin, cb) {
     if (!origin) return cb(null, true); // curl/postman
-    if (ALLOWED.has(origin)) return cb(null, true);
+    if (ALLOW.has(origin)) return cb(null, true);
     cb(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
-  optionsSuccessStatus: 204,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Disposition'],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
@@ -77,9 +84,9 @@ const api = express.Router();
 api.get('/health', async (_req: Request, res: Response) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true });
   } catch (e: any) {
-    res.status(500).json({ ok: false, error: e?.message || 'db' });
+    return res.status(500).json({ ok: false, error: e?.message || 'db' });
   }
 });
 
@@ -95,16 +102,7 @@ api.get('/_routes', (_req, res) => {
         const methods = Object.keys(layer.route.methods || {});
         methods.forEach((m) => out.push({ method: m.toUpperCase(), path: base + layer.route.path }));
       } else if (layer.name === 'router' && layer.handle?.stack) {
-        const prefix = base + (layer.regexp?.fast_slash
-          ? ''
-          : (layer?.regexp?.source || '')
-              .replace('^\\', '')
-              .replace('\\/?(?=\\/|$)', '')
-              .replace(/\\\//g, '/')
-              .replace(/\(\?:\(\[\^\\\/]\+\?\)\)/g, ':param')
-              .replace(/\^/g, '')
-              .replace(/\$$/g, ''));
-        out.push(...listRoutes(layer.handle, prefix));
+        out.push(...listRoutes(layer.handle, base));
       }
     });
     return out;
@@ -112,53 +110,56 @@ api.get('/_routes', (_req, res) => {
   res.json(listRoutes(api, ''));
 });
 
-/* --------------------------- AUTH GLOBAL (CENTRAL) -------------------------- */
+/* ------------------------------- AUTH PÚBLICO ------------------------------- */
+api.post('/auth/login', loginController);
 
-const PUBLIC_PATHS = new Set<string>(['/health', '/ping', '/usuarios/login', '/_routes']);
+// alias de compatibilidade com o front antigo:
+api.post('/usuarios/login', loginController);  // <-- ADICIONE ESTA LINHA
 
-// Preflight dentro do subrouter também
-api.use((req, res, next) => (req.method === 'OPTIONS' ? res.sendStatus(204) : next()));
 
-// 1) Público → segue; senão exige JWT
-api.use((req, res, next) => (PUBLIC_PATHS.has(req.path) ? next() : verifyJWT(req, res, next)));
-
-// 2) Gate admin para /usuarios (exceto login) + bootstrap do 1º usuário
-api.use(async (req, res, next) => {
-  if (req.path === '/usuarios/login') return next();
-
-  if (req.method === 'POST' && req.path === '/usuarios') {
-    try {
-      const count = await prisma.usuario.count();
-      if (count === 0) return next();
-    } catch {
-      /* ignore e segue p/ gate normal */
-    }
-  }
-
-  if (req.path.startsWith('/usuarios')) return requireRole('adm')(req, res, next);
-  next();
-});
-
+/* ------------------------------ Rotas protegidas ----------------------------- */
 /** Quem sou eu (protegido) */
-api.get('/auth/me', (req: Request, res: Response) => {
+api.get('/auth/me', verifyJWT, (req, res) => {
   if (!req.user) return res.status(401).json({ erro: 'Não autenticado' });
   res.json(req.user);
 });
 
-/* ------------------------------- Rotas de negócio ------------------------------- */
-api.use('/clientes', clienteRoutes);
-api.use('/vendas', vendaRoutes);
-api.use('/produtoestoque', produtoEstoqueRoutes);
-api.use('/usuarios', usuarioRoutes);
-api.use('/membros', membroRoutes);
-api.use('/filiais', filialRoutes);
-api.use('/estoques', estoqueRoutes);
-api.use('/categoriaestoque', categoriaEstoqueRoutes);
+/**
+ * Bootstrap do 1º usuário:
+ * - Se NÃO houver nenhum usuário, permitir POST /api/usuarios SEM JWT.
+ * - Caso contrário, exigir verifyJWT + requireRole('adm').
+ *
+ * Colocamos esse middleware ANTES do verifyJWT+requireRole.
+ */
+api.use('/usuarios', async (req, res, next) => {
+  if (req.method === 'POST') {
+    try {
+      const count = await prisma.usuario.count();
+      if (count === 0) return next(); // libera criação do primeiro usuário
+    } catch {
+      // se falhar, continua fluxo normal (e possivelmente 401/403 depois)
+    }
+  }
+  // a partir daqui, exige ADM
+  return verifyJWT(req, res, (err) => {
+    if (err) return next(err);
+    return requireRole('adm')(req, res, next);
+  });
+}, usuarioRoutes);
 
-/* ------------------------------ Montagem em /api ------------------------------ */
+// Demais domínios: exigem login (qualquer papel). Use scopeWhereByFilial nos controllers para restringir.
+api.use('/clientes', verifyJWT, clienteRoutes);
+api.use('/vendas', verifyJWT, vendaRoutes);
+api.use('/produtoestoque', verifyJWT, produtoEstoqueRoutes);
+api.use('/membros', verifyJWT, membroRoutes);
+api.use('/filiais', verifyJWT, filialRoutes);
+api.use('/estoques', verifyJWT, estoqueRoutes);
+api.use('/categoriaestoque', verifyJWT, categoriaEstoqueRoutes);
+
+/* ------------------------------ Montagem em /api ---------------------------- */
 app.use('/api', api);
 
-/* --------------------------- Health simples adicional -------------------------- */
+/* --------------------------- Health simples adicional ----------------------- */
 app.get('/health', (_: Request, res: Response) => res.status(200).send('ok'));
 
 /* ----------------------------------- 404 ----------------------------------- */

@@ -1,52 +1,89 @@
 // components/layout/AppShell.tsx
 'use client';
-import React, { useState } from 'react';
-import { FiMenu } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import Sidebar from '../Sidebar';
+import Header from '../Header';
 import { useTheme } from '../../context/ThemeContext';
+
+const DESKTOP_W_OPEN = '16rem';
+const DESKTOP_W_COLLAPSED = '4rem';
+const MOBILE_HEADER_H = '56px';
+const sidebarTopMobile = `calc(${MOBILE_HEADER_H} + env(safe-area-inset-top))`;
 
 const AppShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { temaAtual } = useTheme();
-  const [open, setOpen] = useState(false);
+
+  // drawer mobile
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  // largura da sidebar no desktop
+  const [collapsed, setCollapsed] = useState(false);
+
+  // atualiza a var global para o DESKTOP
+  useEffect(() => {
+    const w = collapsed ? DESKTOP_W_COLLAPSED : DESKTOP_W_OPEN;
+    document.documentElement.style.setProperty('--sidebar-width', w);
+  }, [collapsed]);
+
+  // opcional: deslocamento de conteúdo no mobile quando drawer abre (se você usa em CSS)
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--content-mobile-offset',
+      openDrawer ? DESKTOP_W_OPEN : '0'
+    );
+  }, [openDrawer]);
 
   return (
     <div className="min-h-screen flex" style={{ background: temaAtual.fundo, color: temaAtual.texto }}>
-      {/* Sidebar */}
+      {/* Sidebar: drawer no mobile, fixa no desktop */}
       <aside
-        className={`
-          fixed z-30 top-0 left-0 h-full w-64 transform transition-transform duration-200
-          ${open ? 'translate-x-0' : '-translate-x-full'}
-          md:translate-x-0 md:static
-        `}
-        style={{ background: temaAtual.card, borderRight: `1px solid ${temaAtual.contraste}` }}
+        className={[
+          'fixed z-40 left-0 transform transition-transform duration-200',
+          openDrawer ? 'translate-x-0' : '-translate-x-full',
+          'md:translate-x-0 md:static',
+        ].join(' ')}
+        style={{
+          // MOBILE (drawer): começa abaixo do header
+          top: sidebarTopMobile,
+          height: `calc(100% - ${sidebarTopMobile})`,
+
+          // DESKTOP (≥ md): a largura vem da var; quando colapsar mudamos a var
+          width: 'var(--sidebar-width, 16rem)',
+
+          // se drawer aberto no mobile, fixa 16rem
+          ...(openDrawer ? { width: DESKTOP_W_OPEN } : {}),
+
+          background: temaAtual.card,
+          borderRight: `1px solid ${temaAtual.contraste}`,
+        }}
       >
-        <div className="p-4 font-bold">MOBsupply</div>
-        <nav className="px-2 pb-6 space-y-1">
-          {/* Coloque seus itens de menu aqui */}
-          <a className="block rounded px-3 py-2 hover:opacity-90" style={{ background: temaAtual.cardHover }}>Painel</a>
-          <a className="block rounded px-3 py-2 hover:opacity-90">Relatórios</a>
-          <a className="block rounded px-3 py-2 hover:opacity-90">Estoque</a>
-          <a className="block rounded px-3 py-2 hover:opacity-90">Vendas</a>
-        </nav>
+        {/* Passe um callback para a Sidebar alternar o colapso no desktop */}
+        <Sidebar
+          
+        
+          // pode manter suas outras props originais
+        />
       </aside>
 
-      {/* Conteúdo */}
-      <div className="flex-1 min-w-0 md:ml-0">
-        {/* Topbar mobile */}
-        <header
-          className="sticky top-0 z-20 md:hidden flex items-center gap-3 px-4 py-3"
-          style={{ background: temaAtual.card, borderBottom: `1px solid ${temaAtual.contraste}` }}
-        >
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="p-2 rounded-md"
-            style={{ background: temaAtual.cardHover }}
-          >
-            <FiMenu />
-          </button>
-          <div className="font-semibold">MOBsupply</div>
-        </header>
+      {/* Backdrop do drawer (não cobre o header) */}
+      {openDrawer && (
+        <div
+          className="fixed right-0 bottom-0 z-30 bg-black/40 md:hidden"
+          style={{ left: 0, top: sidebarTopMobile }}
+          onClick={() => setOpenDrawer(false)}
+          aria-hidden
+        />
+      )}
 
-        <main className="p-4 md:p-6">{children}</main>
+      {/* Coluna principal */}
+      <div className="flex-1 min-w-0">
+        {/* Header único (mobile + desktop) */}
+        <Header onToggleSidebar={() => setOpenDrawer(v => !v)} />
+
+        {/* Conteúdo: usa a var no desktop */}
+        <main className="app-content p-4 md:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

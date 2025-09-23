@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilo global */
+html, body {
+  @apply bg-brand-white text-brand-black font-sans;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Exemplo: links */
+a {
+  @apply text-brand-orange hover:underline;
+}
+
+/* Botões padrões */
+button {
+  @apply rounded-xl px-4 py-2 font-medium;
+}
+
+button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
