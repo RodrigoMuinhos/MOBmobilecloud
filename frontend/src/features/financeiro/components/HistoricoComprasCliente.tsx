@@ -127,7 +127,7 @@ const DetalheVenda: React.FC<DetalheVendaProps> = ({ venda, onToggleStatus, onEx
                   onClick={() => setEditandoData(true)}
                   title="Editar data da venda"
                 >
-                  <FaPen className="inline -mt-0.5 mr-1" /> Editar
+                  <FaPen className="inline -mt-0.5 mr-1" /> 
                 </button>
               </>
             ) : (
