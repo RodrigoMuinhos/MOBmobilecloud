@@ -5,8 +5,9 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [citext()]
+  url        = env("DATABASE_URL")   // pooled
+  directUrl  = env("DIRECT_URL")     // unpooled
+  extensions = [citext()]            // para @db.Citext
 }
 
 /**
@@ -14,7 +15,6 @@ datasource db {
  * ENUMS
  * =========================
  */
-
 enum StatusPagamento {
   PENDENTE
   PAGO
@@ -37,10 +37,9 @@ enum TipoUsuario {
 
 /**
  * =========================
- * CORE DE CLIENTES & VENDAS
+ * CLIENTES & VENDAS
  * =========================
  */
-
 model Cliente {
   id         String    @id @default(uuid())
   nome       String
@@ -50,46 +49,49 @@ model Cliente {
   cidade     String?
   estado     String?
   endereco   String?
-  criadoEm   DateTime  @default(now())
   cep        String?
+  criadoEm   DateTime  @default(now())
 
-  vendas Venda[]
+  vendas     Venda[]
 
   @@index([nome])
 }
 
 model Venda {
-  id                 String          @id @default(uuid())
-  data               DateTime        @default(now())
-  clienteId          String
-  clienteNome        String
+  id                 String   @id @default(uuid())
+  data               DateTime
+  clienteId          String?
+  clienteNome        String?
   carrinho           Json
-  subtotal           Float
-  totalFinal         Float
-  descontoPercentual Float?
-  descontoValor      Float?
+  subtotal           Decimal   @db.Decimal(12, 2)
+  totalFinal         Decimal   @db.Decimal(12, 2)
+  descontoPercentual Decimal?  @db.Decimal(5, 2)
+  descontoValor      Decimal?  @db.Decimal(12, 2)
   destinoDesconto    String?
-  frete              Float?
-  acrescimo          Float?
-  formaPagamento     String
+  frete              Decimal?  @db.Decimal(12, 2)
+  acrescimo          Decimal?  @db.Decimal(12, 2)
+  formaPagamento     String?
   parcelas           Int?
-  status_pagamento   StatusPagamento @default(PENDENTE)
-  observacoes        String          @default("")
+  status_pagamento   StatusPagamento
+  observacoes        String?
 
-  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  // Relações
+  cliente    Cliente? @relation(fields: [clienteId], references: [id])
 
-  filialId String
-  filial   Filial @relation(fields: [filialId], references: [id], onDelete: Cascade)
+  filialId   String?
+  filial     Filial?  @relation(fields: [filialId], references: [id])
 
-  // vendedor como fonte de divisão por usuário
   vendedorId String?
-  vendedor   Usuario? @relation(fields: [vendedorId], references: [id], onDelete: SetNull)
+  vendedor   Usuario? @relation(fields: [vendedorId], references: [id])
 
-  // back-relation p/ movimentos de estoque gerados por esta venda
+  // Movimentações de estoque ligadas à venda
   movimentos MovimentoEstoque[] @relation("VendaMovimentos")
 
-  @@index([filialId, data])
-  @@index([vendedorId, data])
+  @@index([clienteId])
+  @@index([filialId])
+  @@index([vendedorId])
+
+  @@map("Venda")
 }
 
 /**
@@ -97,7 +99,6 @@ model Venda {
  * ESTOQUE / CATEGORIAS
  * =========================
  */
-
 model CategoriaEstoque {
   id    String @id @default(uuid())
   marca String
@@ -127,9 +128,6 @@ model Estoque {
 
   produtos  ProdutoEstoque[]
   criado_em DateTime         @default(now())
-
-  // Se desejar garantir unicidade de nome+cidade por filial, descomente:
-  // @@unique([nome, cidade, filialId], name: "estoque_nome_cidade_filial_unico")
 
   @@index([filialId])
 }
@@ -176,30 +174,31 @@ model ProdutoEstoque {
  * USUÁRIOS / EQUIPE
  * =========================
  */
-
 model Usuario {
-  id           String      @id @default(uuid())
+  id           String       @id @default(uuid())
+  cpf          String       @unique
   nome         String
-  email        String?     @unique @db.Citext // opcional
-  senha        String
-  tipo         TipoUsuario @default(vendedor)
+  email        String       @unique @db.Citext
+  tipo         TipoUsuario
   cidade       String?
-  cpf          String      @unique
-  nascimento   DateTime?
-  whatsapp     String? // opcional
+  senha    String       @map("senha") // a coluna no banco chama "senha"
+  nascimento   DateTime? 
+  whatsapp     String?
   avatar       String?
-  criadoEm     DateTime    @default(now())
-  atualizadoEm DateTime    @updatedAt
-  filialId     String?
-  filial       Filial?     @relation(fields: [filialId], references: [id])
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
 
-  vendas Venda[]
+  filialId String?
+  filial   Filial?      @relation(fields: [filialId], references: [id])
 
-  @@index([filialId])
-  @@index([tipo])
-  @@index([nome])
+  vendas   Venda[]
 }
 
+/**
+ * =========================
+ * MEMBROS (auxiliar)
+ * =========================
+ */
 model Membro {
   id       String  @id @default(uuid())
   nome     String
@@ -215,7 +214,6 @@ model Membro {
  * FILIAIS (UF/ESTADOS)
  * =========================
  */
-
 model Filial {
   id     String  @id @default(uuid())
   nome   String
@@ -229,7 +227,7 @@ model Filial {
 
   // back-relations
   categorias CategoriaEstoque[] @relation("FilialCategorias")
-  estoque    ProdutoEstoque[] // produtos associados à filial (via ProdutoEstoque.filialId)
+  estoque    ProdutoEstoque[]        // produtos associados via ProdutoEstoque.filialId
   vendas     Venda[]
   usuarios   Usuario[]
   movimentos MovimentoEstoque[]
@@ -281,8 +279,8 @@ model TransferenciaEstoque {
   quantidade    Int
   observacao    String?
 
-  origemFilialId String
-  origemFilial   Filial @relation("TransferenciasOrigem", fields: [origemFilialId], references: [id], onDelete: Cascade)
+  origemFilialId  String
+  origemFilial    Filial @relation("TransferenciasOrigem", fields: [origemFilialId], references: [id], onDelete: Cascade)
 
   destinoFilialId String
   destinoFilial   Filial @relation("TransferenciasDestino", fields: [destinoFilialId], references: [id], onDelete: Cascade)

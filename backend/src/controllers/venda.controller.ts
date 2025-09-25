@@ -1,10 +1,8 @@
 // backend/src/controllers/venda.controller.ts
 import { Request, Response } from 'express';
-
 import { v4 as uuidv4 } from 'uuid';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../prisma';
-
 
 // ---------- helpers ----------
 const n2 = (v: any, d = 0) => {
@@ -13,14 +11,14 @@ const n2 = (v: any, d = 0) => {
 };
 const toStr = (v: any, def = '') => (v === undefined || v === null ? def : String(v));
 
-// Enum inferido do input do modelo (compatível com versões geradas)
+// Enum inferido do input do modelo
 type StatusPagamentoEnum = Prisma.VendaCreateInput['status_pagamento'];
 
 const toStatusEnum = (s: any): StatusPagamentoEnum => {
   const up = String(s ?? '').toUpperCase();
   if (up === 'PAGO') return 'PAGO' as StatusPagamentoEnum;
   if (up === 'CANCELADO') return 'CANCELADO' as StatusPagamentoEnum;
-  return 'PENDENTE' as StatusPagamentoEnum; // default
+  return 'PENDENTE' as StatusPagamentoEnum;
 };
 
 // Campos permitidos para update parcial
@@ -36,7 +34,8 @@ const CAMPOS_ATUALIZAVEIS = new Set([
   'acrescimo',
   'parcelas',
   'observacoes',
-  'carrinho', // se precisar atualizar itens
+  'carrinho',
+  'data', // ⬅️ agora permitido
 ]);
 
 const filtrarPermitidos = (dados: Record<string, any>) => {
@@ -99,17 +98,29 @@ export const salvarVenda = async (req: Request, res: Response) => {
     parcelas = null,
     observacao,
     observacoes,
+    data: dataInput, // ⬅️ opcional: permitir informar data na criação
   } = req.body ?? {};
 
   const formaPagamentoFinal = toStr(formaPagamento ?? forma_pagamento ?? 'Pix');
   const statusPagamentoFinal = toStatusEnum(statusPagamento ?? status_pagamento ?? 'PENDENTE');
   const observacoesFinal = toStr(observacoes ?? observacao ?? '');
 
+  // validação mínima
   const faltando: string[] = [];
   if (!clienteId) faltando.push('clienteId');
   if (!filialId) faltando.push('filialId');
   if (!Array.isArray(carrinho) || carrinho.length === 0) faltando.push('carrinho');
   if (!Number.isFinite(Number(totalFinal))) faltando.push('totalFinal');
+
+  // validação da data (se enviada)
+  let dataVenda: Date = new Date();
+  if (dataInput !== undefined) {
+    const d = new Date(dataInput);
+    if (isNaN(d.getTime())) {
+      return res.status(400).json({ erro: "Campo 'data' inválido. Envie ISO, ex: 2025-09-25T12:00:00.000Z" });
+    }
+    dataVenda = d;
+  }
 
   if (faltando.length) {
     return res.status(400).json({ erro: 'Dados da venda incompletos ou inválidos.', faltando });
@@ -125,7 +136,7 @@ export const salvarVenda = async (req: Request, res: Response) => {
     const novaVenda = await prisma.venda.create({
       data: {
         id: uuidv4(),
-        data: new Date(),
+        data: dataVenda, // ⬅️ usa a data validada (ou now)
         clienteId: String(clienteId),
         clienteNome,
         filialId: String(filialId),
@@ -212,9 +223,18 @@ export const atualizarVenda = async (req: Request, res: Response) => {
     dados.destinoDesconto = toStr(dados.destinoDesconto);
   }
 
-  // carrinho (se enviado, precisa ser array/json válido)
+  // carrinho deve ser array válido
   if ('carrinho' in dados && !Array.isArray(dados.carrinho)) {
-    delete dados.carrinho; // ignora formato inválido para evitar 500
+    delete dados.carrinho;
+  }
+
+  // data: validar e converter para Date
+  if ('data' in dados) {
+    const d = new Date(dados.data);
+    if (isNaN(d.getTime())) {
+      return res.status(400).json({ erro: "Campo 'data' inválido. Envie ISO, ex: 2025-09-25T12:00:00.000Z" });
+    }
+    dados.data = d;
   }
 
   // whitelisting

@@ -1,6 +1,6 @@
 'use client';
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
-import { FaCircle, FaTrash } from 'react-icons/fa';
+import { FaCircle, FaTrash, FaPen, FaSave, FaTimes } from 'react-icons/fa';
 import { VendaAPI, ItemCarrinhoAPI } from '../../../types/api/vendaApi.types';
 import { useTheme } from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -40,14 +40,38 @@ const calcularTotaisVenda = (venda: VendaAPI) => {
 const isPago = (s: VendaAPI['status_pagamento'] | string | undefined) =>
   String(s ?? '').toLowerCase() === 'pago';
 
+// ===== helpers de data para o input datetime-local =====
+const localDatetimeToISO = (local: string) => {
+  const [date, time] = local.split('T');
+  if (!date || !time) return null;
+  const [y, m, d] = date.split('-').map(Number);
+  const [hh, mm] = time.split(':').map(Number);
+  const dt = new Date(y, (m - 1), d, hh, mm, 0);
+  return dt.toISOString();
+};
+
+const isoToLocalDatetimeInput = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const mm = pad(d.getMonth() + 1);
+  const dd = pad(d.getDate());
+  const hh = pad(d.getHours());
+  const mi = pad(d.getMinutes());
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+};
+
 // ---------- Detalhe ----------
 type DetalheVendaProps = {
   venda: VendaAPI;
   onToggleStatus: (e: React.MouseEvent, venda: VendaAPI) => void;
   onExcluir: (e: React.MouseEvent, venda: VendaAPI) => void;
+  onAtualizarVendas: () => void; // para recarregar após salvar a data
 };
 
-const DetalheVenda: React.FC<DetalheVendaProps> = ({ venda, onToggleStatus, onExcluir }) => {
+const DetalheVenda: React.FC<DetalheVendaProps> = ({ venda, onToggleStatus, onExcluir, onAtualizarVendas }) => {
   const { temaAtual } = useTheme();
   const { currentLang } = useLanguage();
   const t = textos[currentLang].relatorio;
@@ -57,13 +81,86 @@ const DetalheVenda: React.FC<DetalheVendaProps> = ({ venda, onToggleStatus, onEx
     [venda]
   );
 
+  // estado de edição da data
+  const [editandoData, setEditandoData] = useState(false);
+  const [dataLocal, setDataLocal] = useState(isoToLocalDatetimeInput(venda.data ?? ''));
+
+  useEffect(() => {
+    setDataLocal(isoToLocalDatetimeInput(venda.data ?? ''));
+  }, [venda.data]);
+
+  const salvarData = async () => {
+    const id = venda.id ?? '';
+    if (!id) return alert('Não foi possível salvar: venda sem ID.');
+    const iso = localDatetimeToISO(dataLocal);
+    if (!iso) return alert('Data inválida.');
+
+    try {
+      await api.patch(`/vendas/${id}/data`, { data: iso }).catch(async (err: any) => {
+        if (err?.response?.status === 404) {
+          await api.put(`/vendas/${id}`, { data: iso });
+        } else {
+          throw err;
+        }
+      });
+      setEditandoData(false);
+      onAtualizarVendas(); // recarrega lista com a data atualizada
+    } catch (error: any) {
+      const payload = error?.response?.data || error?.message || error;
+      alert(`Erro ao atualizar data da venda.\nDetalhes: ${JSON.stringify(payload)}`);
+      console.error('Erro ao atualizar data:', error);
+    }
+  };
+
   return (
     <div className="mb-4 border rounded p-3" style={{ borderColor: temaAtual.destaque }}>
       <div className="flex justify-between items-start text-sm mb-3">
         <div className="space-y-1">
-          <div><strong>{t.compraEm}:</strong> {formatarData(venda.data ?? '')}</div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <strong>{t.compraEm}:</strong>
+            {!editandoData ? (
+              <>
+                <span>{formatarData(venda.data ?? '')}</span>
+                <button
+                  className="ml-2 px-2 py-1 text-xs border rounded hover:opacity-80"
+                  style={{ borderColor: temaAtual.destaque }}
+                  onClick={() => setEditandoData(true)}
+                  title="Editar data da venda"
+                >
+                  <FaPen className="inline -mt-0.5 mr-1" /> Editar
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  type="datetime-local"
+                  className="px-2 py-1 text-xs border rounded"
+                  style={{ borderColor: temaAtual.destaque, color: temaAtual.texto }}
+                  value={dataLocal}
+                  onChange={(e) => setDataLocal(e.target.value)}
+                />
+                <button
+                  className="px-2 py-1 text-xs border rounded hover:opacity-80"
+                  style={{ borderColor: temaAtual.destaque }}
+                  onClick={salvarData}
+                  title="Salvar"
+                >
+                  <FaSave className="inline -mt-0.5 mr-1" /> Salvar
+                </button>
+                <button
+                  className="px-2 py-1 text-xs border rounded hover:opacity-80"
+                  style={{ borderColor: temaAtual.destaque }}
+                  onClick={() => { setEditandoData(false); setDataLocal(isoToLocalDatetimeInput(venda.data ?? '')); }}
+                  title="Cancelar"
+                >
+                  <FaTimes className="inline -mt-0.5 mr-1" /> Cancelar
+                </button>
+              </div>
+            )}
+          </div>
           <div><strong>{t.total}:</strong> {formatarMoeda(totalFinal)}</div>
         </div>
+
         <div className="flex items-center gap-3">
           <FaCircle
             className={`cursor-pointer text-lg ${isPago(venda.status_pagamento) ? 'text-green-600' : 'text-red-600'}`}
@@ -155,7 +252,6 @@ const HistoricoComprasCliente: React.FC<Props> = ({ lista, onAtualizarVendas }) 
     async (e: React.MouseEvent, venda: VendaAPI) => {
       e.stopPropagation();
 
-      // 🔒 narrow do ID para satisfazer o tipo
       const id = venda.id ?? '';
       if (!id) {
         alert('Não foi possível alterar: venda sem ID.');
@@ -220,10 +316,11 @@ const HistoricoComprasCliente: React.FC<Props> = ({ lista, onAtualizarVendas }) 
         <h4 className="text-sm font-semibold mb-2">{t.historicoCompras}</h4>
         {listaLocal.map((venda, idx) => (
           <DetalheVenda
-            key={venda.id ?? `venda-${idx}`}   // evita key undefined
+            key={venda.id ?? `venda-${idx}`}
             venda={venda}
             onToggleStatus={handleToggleStatus}
             onExcluir={handleExcluirVenda}
+            onAtualizarVendas={onAtualizarVendas}
           />
         ))}
       </td>
